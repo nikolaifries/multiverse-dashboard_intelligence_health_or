@@ -1,0 +1,53 @@
+{
+    "title": "R2:D2",
+    "level": 2,
+    "n_boot_iter": 1000,
+    "colmap": {
+        "key_c": "Study_name",
+        "key_c_id": "c_id",
+        "key_e_id": "e_id",
+        "key_z": "z",
+        "key_z_se": "z_se",
+        "key_r": "r",
+        "key_r_se": "r_se",
+        "key_main_es": "z",
+        "key_main_es_se": "z_se",
+        "key_n": "N"
+    },
+    "k_min": 2,
+    "which": {
+        "n": 6,
+        "keys": ["sex", "method", "age_group", "sample", "race", "published_estimate"],
+        "keys_labels": ["sex", "measure", "age", "group", "ethnicity", "report"],
+        "values": [
+            ["men", "women"],
+            ["direct", "image"],
+            ["adults", "non-adults"],
+            ["healthy", "clinical"],
+            ["white", "other"],
+            ["yes", "no"]
+        ],
+        "values_labels": [
+            ["male", "female"],
+            ["direct", "image"],
+            ["adults", "non-adults"],
+            ["healthy", "patients"],
+            ["White", "non-White"],
+            ["full", "not"]
+        ],
+        "all_label": "either"
+    },
+    "how": {
+        "n": 2,
+        "keys": ["effect", "ma_method"],
+        "keys_labels": ["metric", "model"],
+        "values": [
+            ["r", "z"],
+            ["FE", "RE_DL", "REML", "unweighted"]
+        ],
+        "values_labels": [
+            ["r", "z"],
+            ["FEM", "REM", "REML", "UWM"]
+        ]
+    }
+}

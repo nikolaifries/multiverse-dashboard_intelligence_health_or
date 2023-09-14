@@ -1,0 +1,185 @@
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: "white";
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: gray;
+    border-radius: 10px;
+}
+
+h1 {
+    padding-left: 10px
+}
+
+h2 {
+    padding-left: 20px
+}
+
+.nav-tabs {
+    --bs-nav-tabs-border-color: black;
+    --bs-border-width: 2px;
+    --bs-nav-link-color: hotpink;
+    --bs-nav-link-hover-color: hotpink;
+}
+.nav-item {
+    min-width: 200px;
+    text-align: center;
+    --bs-nav-tabs-link-hover-border-color: lightgray;
+}
+
+.nav-item .active {
+    border-left: 2px solid black !important;
+    border-right: 2px solid black !important;
+    border-top: 2px solid black !important;
+}
+.nav-item:hover {
+    border-bottom: red !important;
+}
+
+.tab-content {
+    padding: 15px;
+}
+
+.btn {
+    background-color: hotpink;
+    border: 0px;
+    min-width: 50px;
+}
+
+.card-header {
+    background-color: dimgray;
+    color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    text-align: left;
+    padding: 0px;
+}
+.card-title {
+    margin-bottom: 0px;
+}
+.card-header.thin {
+    max-height: 15px;
+}
+
+.card-body {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.card-main {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+.card-body.spec-info {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+.card-body.filters {
+    max-height: 1000px;
+    overflow-y: scroll;
+}
+
+.header {
+    padding: 15px;
+    height: 110px;
+}
+
+.upload {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    border: 2px dashed black;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.col, .col-2, .col-3, .col-4, .col-5, .col-6{
+    margin-block: auto;
+}
+.btn-col {
+    text-align: start;
+}
+
+.download-card-body {
+    padding: 10px;
+    align-items: center;
+}
+
+p {
+    margin-bottom: 0.3rem;
+}
+
+.accordion-item {
+    --bs-accordion-border-color: white;
+    --bs-accordion-border-width: 0px;
+}
+.accordion-header {
+    padding-left: 0px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.accordion-button {
+    padding-left: 0;
+    font-weight: bold;
+    height: 36px;
+    --bs-accordion-active-bg: white;
+    --bs-accordion-btn-focus-box-shadow: 0;
+}
+.accordion-body {
+    padding: 5px;
+}
+
+hr {
+    margin: 0.5rem 0;
+}
+
+#inStudyChecklist, #inESChecklist {
+    margin-top: 10px;
+}
+
+.study-checks > .form-check {
+    width: 50%;
+    display: inline-block;
+}
+
+.es-checks > .form-check {
+    width: 30%;
+    display: inline-block;
+}
+
+#inRangeK, #inRangeKC {
+    padding: 0px 5px 25px !important;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.input-group-text {
+    background-color: lightgrey;
+    min-width: 80px;
+}
+
+.sidebar {
+    margin-block: unset;
+}
+
+#outHeaderLevel {
+    text-align: end;
+}

@@ -1,0 +1,44 @@
+{
+    "title": "Chernobyl",
+    "level": 3,
+    "n_boot_iter": 1000,
+    "colmap": {
+        "key_c": "author",
+        "key_c_id": "c_id",
+        "key_e_id": "e_id",
+        "key_z": "z",
+        "key_z_se": "se.z",
+        "key_z_var": "var.z",
+        "key_main_es": "z",
+        "key_main_es_se": "se.z",
+        "key_n": "n"
+    },
+    "k_min": 2,
+    "which": {
+        "n": 1,
+        "keys": ["radiation"],
+        "keys_labels": ["radiation"],
+        "values": [
+            ["low", "medium", "high"]
+        ],
+        "values_labels": [
+            ["low", "medium", "high"]
+        ],
+        "all_label": "either"
+    },
+    "how": {
+        "n": 3,
+        "keys": ["effect", "ma_method", "test"],
+        "keys_labels": ["metric", "model", "test"],
+        "values": [
+            ["z"],
+            ["REML", "ML"],
+            ["t", "z"]
+        ],
+        "values_labels": [
+            ["z"],
+            ["REML", "ML"],
+            ["t", "z"]
+        ]
+    }
+}

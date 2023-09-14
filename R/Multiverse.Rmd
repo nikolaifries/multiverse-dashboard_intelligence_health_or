@@ -1,0 +1,207 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(dmetar)
+library(metafor)
+library(jsonlite)
+library(ggplot2)
+library(ggpubr)
+
+source("bootstrap.R", local = knitr::knit_global())
+source("config.R", local = knitr::knit_global())
+source("data.R", local = knitr::knit_global())
+source("data.R", local = knitr::knit_global())
+source("plotting.R", local = knitr::knit_global())
+source("specs.R", local = knitr::knit_global())
+source("user_data.R", local = knitr::knit_global())
+```
+
+## Constants
+
+Set paths to your **data**, **config**, and **specs** files, whether to load or preprocess data, whether to load or generate specs, and whether to load or generate bootstrap data.
+
+```{r}
+TITLE <- "R2D2_3"
+DIR <- "../data/R2D2-Meta-Analysis"
+DATA_PATH <- paste0(DIR, "/R2D2.csv")
+
+# TITLE <- "Chernobyl"
+# DIR <- "../data/Chernobyl-Meta-Analysis"
+# DATA_PATH <- paste0(DIR, "/Chernobyl.rda")
+
+PP_DATA_PATH <- paste0(DIR, "/data_", TITLE, ".csv")
+CONFIG_PATH <- paste0(DIR, "/config_", TITLE, ".json")
+SPECS_PATH <- paste0(DIR, "/specs_", TITLE, ".csv")
+BOOT_PATH <- paste0(DIR, "/boot_", TITLE, ".csv")
+PREPROCESS_DATA <- F # Load of preprocess data
+GENERATE_SPECS <- F # Load or generate specs
+GENERATE_BOOTDATA <- F # Load or generate boot data
+```
+
+## Preprocess Data
+
+Preprocess the dataset. The preprocessed data will be saved in a `.csv` file with the given title, prefixed by `data_`. The prefix is required for the Plotly Dashboard to work properly.
+
+```{r}
+if (PREPROCESS_DATA) {
+  ma_data <- preprocessData(DATA_PATH, title = TITLE)
+} else {
+  ma_data <- read.table(PP_DATA_PATH, sep = ",", header=TRUE)
+}
+print(dim(ma_data))
+head(ma_data)
+```
+
+Prepare the preprocessed dataset for meta-analysis. This adds **cluster-** and **effect- IDs**, sets datatypes, etc.. For details, consult the function documentation.
+
+```{r}
+config <- readConfig(CONFIG_PATH)
+data <- prepareData(config$colmap, ma_data)
+print(dim(data))
+head(data)
+```
+
+## Specifications
+
+Generate specifications, or load them from the given `SPECS_PATH`. If specifications are generated, they will be saved in a `.csv` file at the given `SPECS_PATH`.
+
+```{r}
+if (GENERATE_SPECS) {
+  specs <- generateSpecs(
+    data,
+    config$which_lists,
+    config$how_lists,
+    config$colmap,
+    config$k_min,
+    config$level,
+    SPECS_PATH
+  )
+} else {
+  specs <- read.table(SPECS_PATH, sep = ",", header=TRUE)
+}
+print(dim(specs))
+head(specs)
+```
+
+## Bootstrap Data
+
+Generate bootstrap data, or load it from the given `BOOT_PATH`. If bootstrap data is generated, they will be saved in a `.csv` file at the given `BOOT_PATH`.
+
+```{r}
+if (GENERATE_BOOTDATA) {
+  boot_data <- generateBootData(
+    specs,
+    config$n_boot_iter,
+    data,
+    config$colmap,
+    config$level,
+    BOOT_PATH
+  )
+} else {
+  boot_data <- read.table(BOOT_PATH, sep = ",", header=TRUE)
+}
+print(dim(boot_data))
+head(boot_data)
+```
+
+
+
+## Plotting
+
+Prepare **cluster-** and **specification-** fill data for the respective tile maps, and the list of colors that constitute the color scheme.
+
+```{r}
+cluster_fill_data <- getClusterFillData(data, specs, config$colmap)
+spec_fill_data <- getSpecFillData(
+  config$n_which,
+  config$which_lists,
+  config$n_how,
+  config$how_lists,
+  specs
+)
+fill_levels <- length(unique(unlist(spec_fill_data)))
+colors <- getColors(fill_levels)
+```
+
+Get important variables for plotting.
+
+```{r}
+n_total_specs <- nrow(specs)
+k_range <- c(config$k_min, max(specs$k))
+labels <- config$labels
+title <- config$title
+x_range <- c(1 - 0.5, n_total_specs + 0.5)
+```
+
+### Inferential Specification Plot
+
+```{r}
+fig_inferential <- plotInferential(boot_data, x_range, title)
+fig_inferential
+```
+### p-Value Histogram
+
+```{r}
+fig_p_hist <- plotPValuesHist(specs, title)
+fig_p_hist
+```
+
+### Rainforest
+
+```{r}
+fig_rainforest <- plotScaRainforest(data, config$colmap, title)
+fig_rainforest
+```
+
+### Gosh
+
+```{r}
+fig_gosh <- plotGosh(data, config$colmap, title)
+fig_gosh
+```
+
+### Multiverse
+
+```{r}
+fig_multiverse <- plotMultiverse(specs, n_total_specs, k_range, cluster_fill_data,
+                                 spec_fill_data, labels, colors, config$level, title,
+                                 x_range)
+fig_multiverse
+#ggsave("R2D4D_specforest.pdf", fig_multiverse, width = 16*1.2, height = 12*1.2, dpi = 600, units = "cm")
+ggsave("R2D4D_specforest.pdf", fig_multiverse, width = 16*1.2, height = 25*1.2, dpi = 600, units = "cm")
+```
+
+```{r}
+fig_caterpillar <- plotCaterpillar(specs, n_total_specs, colors, k_range,
+                                   title, x_range, fill_levels)
+fig_caterpillar
+```
+
+
+```{r}
+fig_cluster_tiles <- plotClusterTiles(specs, cluster_fill_data, n_total_specs,
+                                      title, x_range)
+fig_cluster_tiles
+```
+
+
+```{r}
+fig_cluster_size <- plotClusterSize(specs, k_range, n_total_specs,
+                                    title, x_range)
+fig_cluster_size
+```
+```{r}
+fig_sample_size <- plotSampleSize(specs, k_range, n_total_specs,
+                                  title, x_range)
+fig_sample_size
+```
+
+
+```{r}
+fig_spec_tiles <- plotSpecTiles(specs, n_total_specs, spec_fill_data,
+                                labels, colors, k_range, title, x_range)
+fig_spec_tiles
+```
