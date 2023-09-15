@@ -5,7 +5,6 @@ from tqdm import tqdm
 
 from user_fit import fit_model_lvl_2, fit_model_lvl_3
 
-
 def generate_specs(data, which_lists, how_lists, colmap, k_min, level, save_path):
     group_factors = dict(which_lists, **how_lists)
     cart_prod = product(*[values for values in group_factors.values()])

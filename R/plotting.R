@@ -142,12 +142,11 @@ plotClusterTiles <- function(specs, cluster_fill_data, n_total_specs,
 }
 
 plotSpecTiles <- function(specs, n_total_specs, spec_fill_data,
-                          labels, colors, k_range, title, x_range) {
+                          labels, colors, k_range, title, x_range, fill_levels) {
   y_labels <- rev(labels)
   n_factors <- length(y_labels)
   
   y_intercept <- getYIntercepts_(y_labels)
-  fill_levels <- length(unique(unlist(spec_fill_data)))
   color_scale <- getColorScale_(colors, fill_levels)
   color_scale <- c("white", color_scale)
   
@@ -255,7 +254,7 @@ getColorScale_ <- function(colors, fill_levels) {
 
 plotMultiverse <- function(specs, n_total_specs, k_range, cluster_fill_data,
                            spec_fill_data, labels, colors, level,
-                           title, x_range) {
+                           title, x_range, fill_levels) {
   
   if (level == 3) {
     fig_cluster_tiles <- plotClusterTiles(specs, cluster_fill_data, n_total_specs,
@@ -270,7 +269,7 @@ plotMultiverse <- function(specs, n_total_specs, k_range, cluster_fill_data,
   title <- NULL
   fig_sample_size <- plotSampleSize(specs, k_range, n_total_specs, title, x_range)
   fig_spec_tiles <- plotSpecTiles(specs, n_total_specs, spec_fill_data, labels, 
-                                  colors, k_range, title, x_range)
+                                  colors, k_range, title, x_range, fill_levels)
   
   if (level == 2) {
     fig <- ggarrange(fig_caterpillar, fig_sample_size, fig_spec_tiles,
@@ -286,7 +285,7 @@ plotInferential <- function(boot_data, x_range, title) {
   fig <- ggplot(data = boot_data, aes(x = rank, y = obs)) +
     geom_ribbon(aes(x =  rank, ymin = boot_lb, ymax = boot_ub), fill = "gray", color = "black", lty = "dotted", alpha = 0.7, size = 0.25) +
     geom_line(col = "firebrick", linewidth = 0.5) +
-    geom_hline(yintercept = 0, linetype = 2, size = 0.25) +
+    geom_hline(yintercept = 0, linetype = 2, linewidth = 0.25) +
     scale_x_continuous(name = "Specification number") +
     scale_y_continuous(name = "Summary effect") +
     ggtitle(title) +

@@ -48,8 +48,8 @@ def get_colors(fill_levels):
               "#FFFFBF", "#E6F598", "#ABDDA4", "#66C2A5", "#3288BD", "#5E4FA2"]
     return colors
 
-def _get_color_scale(colors):
-    color_indices = np.linspace(1, len(colors), 28 - 1, dtype=int) - 1
+def _get_color_scale(colors, fill_levels):
+    color_indices = np.linspace(1, len(colors), fill_levels - 1, dtype=int) - 1
     color_scale = [colors[ci] for ci in color_indices]
     return color_scale
 
@@ -67,8 +67,8 @@ def plot_cluster_tiles(specs, cluster_fill_data, n_total_specs, title):
     return fig
 
 def plot_spec_tiles(specs, n_total_specs, spec_fill_data, labels, colors,
-                    k_range, title):
-    color_scale = _get_color_scale(colors)
+                    k_range, title, fill_levels):
+    color_scale = _get_color_scale(colors, fill_levels)
     spec_tiles = _spec_tiles(specs, spec_fill_data, labels, n_total_specs, color_scale, k_range)
     fig = go.Figure()
     fig.add_trace(spec_tiles["go"])
@@ -103,10 +103,10 @@ def plot_sample_size(specs, k_range, n_total_specs, title):
     fig.update_layout(common_args["layout"], width=1000, height=200)
     return fig
 
-def plot_caterpillar(specs, n_total_specs, colors, k_range, title):
+def plot_caterpillar(specs, n_total_specs, colors, k_range, title, fill_levels):
     y_limits = _get_y_limits(specs)
     y_ticks = _get_y_ticks(y_limits)
-    color_scale = _get_color_scale(colors)
+    color_scale = _get_color_scale(colors, fill_levels)
     caterpillar = _caterpillar(
         specs,
         n_total_specs,
@@ -127,7 +127,7 @@ def plot_caterpillar(specs, n_total_specs, colors, k_range, title):
     return fig
 
 def plot_multiverse(specs, n_total_specs, k_range, cluster_fill_data, 
-                    spec_fill_data, labels, colors, level, title,
+                    spec_fill_data, labels, colors, level, title, fill_levels,
                     y_ticks=None, y_limits=None):
     if level == 2:
         rows = 3
@@ -145,7 +145,7 @@ def plot_multiverse(specs, n_total_specs, k_range, cluster_fill_data,
     )
     row_counter = 1
 
-    color_scale = _get_color_scale(colors)
+    color_scale = _get_color_scale(colors, fill_levels)
 
     if y_limits is None:
         y_limits = _get_y_limits(specs)

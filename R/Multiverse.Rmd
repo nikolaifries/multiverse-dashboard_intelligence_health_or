@@ -1,18 +1,20 @@
 ---
-title: "R Notebook"
+title: "Multiverse Meta-Analysis"
 output: html_notebook
 ---
 
+This notebook contains all code required for **Multiverse Meta-Analyses**, including the generation of specifications, bootstrap data, and visualizations.
+
+## Imports
+
 ```{r}
-library(dmetar)
-library(metafor)
 library(jsonlite)
 library(ggplot2)
 library(ggpubr)
+library(metafor)
 
 source("bootstrap.R", local = knitr::knit_global())
 source("config.R", local = knitr::knit_global())
-source("data.R", local = knitr::knit_global())
 source("data.R", local = knitr::knit_global())
 source("plotting.R", local = knitr::knit_global())
 source("specs.R", local = knitr::knit_global())
@@ -21,10 +23,10 @@ source("user_data.R", local = knitr::knit_global())
 
 ## Constants
 
-Set paths to your **data**, **config**, and **specs** files, whether to load or preprocess data, whether to load or generate specs, and whether to load or generate bootstrap data.
+In this cell, set the **title**, the **working directory** and the **path to the dataset** for this analysis. The **config**, **preprocessed data**, **specs**, and **bootstrap data** paths depend on the working directory and the title. This naming convention can be changed, but the prefixes (i.e. `boot`, `config`, `data` and `specs`) are required for the **Dashboard** to work. The configuration file must exist, all other data can either be loaded or generated, using the boolean flags. The generated data will be stored at the specified paths, or loaded from that path.
 
 ```{r}
-TITLE <- "R2D2_3"
+TITLE <- "R2D2_2"
 DIR <- "../data/R2D2-Meta-Analysis"
 DATA_PATH <- paste0(DIR, "/R2D2.csv")
 
@@ -32,18 +34,60 @@ DATA_PATH <- paste0(DIR, "/R2D2.csv")
 # DIR <- "../data/Chernobyl-Meta-Analysis"
 # DATA_PATH <- paste0(DIR, "/Chernobyl.rda")
 
-PP_DATA_PATH <- paste0(DIR, "/data_", TITLE, ".csv")
+# TITLE = "IandR_2"
+# DIR = "../data/IandR-Meta-Analysis"
+# DATA_PATH = paste0(DIR, "/iandr.sav")
+
+PREPROCESS_DATA <- F # Load (False) or preprocess data (True)
+GENERATE_SPECS <- T # Load (False) or generate specs (True)
+GENERATE_BOOTDATA <- T # Load (False) or generate boot data (True)
+
 CONFIG_PATH <- paste0(DIR, "/config_", TITLE, ".json")
+PP_DATA_PATH <- paste0(DIR, "/data_", TITLE, ".csv")
 SPECS_PATH <- paste0(DIR, "/specs_", TITLE, ".csv")
 BOOT_PATH <- paste0(DIR, "/boot_", TITLE, ".csv")
-PREPROCESS_DATA <- F # Load of preprocess data
-GENERATE_SPECS <- F # Load or generate specs
-GENERATE_BOOTDATA <- F # Load or generate boot data
 ```
 
-## Preprocess Data
+## Configuration
 
-Preprocess the dataset. The preprocessed data will be saved in a `.csv` file with the given title, prefixed by `data_`. The prefix is required for the Plotly Dashboard to work properly.
+In this cell, the configuration file is processed. The cell prints out the parsed configuration, so the user can double-check if the result is as expected.
+
+```{r}
+config <- readConfig(CONFIG_PATH)
+c_info <- NULL
+c_info <- c(c_info, paste(config$title, "- Level", config$level, "Meta-Analysis"))
+c_info <- c(c_info, paste("  ", "Minimum Nr. of Samples to include Specification:", config$k_min))
+c_info <- c(c_info, paste("  ", "Bootstrap Iterations:", config$n_boot_iter))
+c_info <- c(c_info, paste("  ", config$n_which, "Which-Factors:"))
+n_which_combos <- 1
+for (which_f in names(config$which_lists)) {
+  values <- config$which_lists[[which_f]]
+  values_str <- paste(values, collapse = ", ")
+  n_which_combos <- n_which_combos * length(values)
+  c_info <- c(c_info, paste("    ", which_f, ":", values_str))
+}
+c_info <- c(c_info, paste("  (", n_which_combos, "Which-Factor Combinations )"))
+c_info <- c(c_info, paste("  ", config$n_how, "How-Factors:"))
+for (how_f in names(config$how_lists)) {
+  values <- config$how_lists[[how_f]]
+  values_str <- paste(values, collapse = ", ")
+  c_info <- c(c_info, paste("    ", how_f, ":", values_str))
+}
+c_info <- c(c_info, paste("  ", "Labels"))
+for (label in config$labels) {
+  c_info <- c(c_info, paste("    ", label))
+}
+c_info <- c(c_info, paste("  ", "Column-Map"))
+for (key in names(config$colmap)) {
+  c_info <- c(c_info, paste("    ", key, ":", config$colmap[[key]]))
+}
+
+cat(c_info, sep = "\n")
+```
+
+## Preprocess and Prepare Data
+
+In this cell, the dataset is either preprocessed and stored at `PP_DATA_PATH`, or the preprocessed dataset is loaded from `PP_DATA_PATH`. The cell prints out the head and the dimensions of the data. If preprocessing is desired, the function `preprocessData()` must be defined by the user, in the file `user_data.R`.
 
 ```{r}
 if (PREPROCESS_DATA) {
@@ -55,10 +99,9 @@ print(dim(ma_data))
 head(ma_data)
 ```
 
-Prepare the preprocessed dataset for meta-analysis. This adds **cluster-** and **effect- IDs**, sets datatypes, etc.. For details, consult the function documentation.
+In this cell, the preprocessed dataset is prepared for meta-analysis. Preparation adds **cluster-** and **effect- IDs**, sets datatypes, etc.. For details, consult the function documentation of `prepareData()`. The cell prints out the head and the dimensions of the prepared data.
 
 ```{r}
-config <- readConfig(CONFIG_PATH)
 data <- prepareData(config$colmap, ma_data)
 print(dim(data))
 head(data)
@@ -66,7 +109,7 @@ head(data)
 
 ## Specifications
 
-Generate specifications, or load them from the given `SPECS_PATH`. If specifications are generated, they will be saved in a `.csv` file at the given `SPECS_PATH`.
+In this cell, the specifications are either generated and stored at `SPECS_PATH`, or loaded from `SPECS_PATH`. For details, consult the function documentation of `generateSpecs()`.
 
 ```{r}
 if (GENERATE_SPECS) {
@@ -88,7 +131,7 @@ head(specs)
 
 ## Bootstrap Data
 
-Generate bootstrap data, or load it from the given `BOOT_PATH`. If bootstrap data is generated, they will be saved in a `.csv` file at the given `BOOT_PATH`.
+In this cell, the bootstrap data is either generated and stored at `BOOT_PATH`, or loaded from `BOOT_PATH`. For details, consult the function documentation of `generateBootData()`.
 
 ```{r}
 if (GENERATE_BOOTDATA) {
@@ -107,11 +150,9 @@ print(dim(boot_data))
 head(boot_data)
 ```
 
-
-
 ## Plotting
 
-Prepare **cluster-** and **specification-** fill data for the respective tile maps, and the list of colors that constitute the color scheme.
+In this cell, the **cluster-** and **specification-** fill data for the respective tile maps is prepared, as well as the list of colors that constitute the color scheme. For details, consult the respective function documentation.
 
 ```{r}
 cluster_fill_data <- getClusterFillData(data, specs, config$colmap)
@@ -126,14 +167,16 @@ fill_levels <- length(unique(unlist(spec_fill_data)))
 colors <- getColors(fill_levels)
 ```
 
-Get important variables for plotting.
+Here we define important variables for plotting that will be reused in several plots, to improve readability.
 
 ```{r}
-n_total_specs <- nrow(specs)
-k_range <- c(config$k_min, max(specs$k))
-labels <- config$labels
-title <- config$title
-x_range <- c(1 - 0.5, n_total_specs + 0.5)
+colmap <- config$colmap                     # Column-mapping from the configuration file
+k_range <- c(config$k_min, max(specs$k))    # Range of k-values (# Samples)
+labels <- config$labels                     # Factor-labels
+level <- config$level                       # Meta-analytic level (2 or 3)
+n_total_specs <- nrow(specs)                # Total number of specifications
+title <- config$title                       # Title of Meta-Analysis
+x_range <- c(1 - 0.5, n_total_specs + 0.5)  # x-axis range
 ```
 
 ### Inferential Specification Plot
@@ -142,6 +185,7 @@ x_range <- c(1 - 0.5, n_total_specs + 0.5)
 fig_inferential <- plotInferential(boot_data, x_range, title)
 fig_inferential
 ```
+
 ### p-Value Histogram
 
 ```{r}
@@ -152,14 +196,14 @@ fig_p_hist
 ### Rainforest
 
 ```{r}
-fig_rainforest <- plotScaRainforest(data, config$colmap, title)
+fig_rainforest <- plotScaRainforest(data, colmap, title)
 fig_rainforest
 ```
 
 ### Gosh
 
 ```{r}
-fig_gosh <- plotGosh(data, config$colmap, title)
+fig_gosh <- plotGosh(data, colmap, title)
 fig_gosh
 ```
 
@@ -167,12 +211,14 @@ fig_gosh
 
 ```{r}
 fig_multiverse <- plotMultiverse(specs, n_total_specs, k_range, cluster_fill_data,
-                                 spec_fill_data, labels, colors, config$level, title,
-                                 x_range)
+                                 spec_fill_data, labels, colors, level, title,
+                                 x_range, fill_levels)
 fig_multiverse
-#ggsave("R2D4D_specforest.pdf", fig_multiverse, width = 16*1.2, height = 12*1.2, dpi = 600, units = "cm")
-ggsave("R2D4D_specforest.pdf", fig_multiverse, width = 16*1.2, height = 25*1.2, dpi = 600, units = "cm")
+
+ggsave("multiverse.pdf", fig_multiverse, width = 16*1.2, height = 25*1.2, dpi = 600, units = "cm")
 ```
+
+### Individual Multiverse Components
 
 ```{r}
 fig_caterpillar <- plotCaterpillar(specs, n_total_specs, colors, k_range,
@@ -180,28 +226,26 @@ fig_caterpillar <- plotCaterpillar(specs, n_total_specs, colors, k_range,
 fig_caterpillar
 ```
 
-
 ```{r}
 fig_cluster_tiles <- plotClusterTiles(specs, cluster_fill_data, n_total_specs,
                                       title, x_range)
 fig_cluster_tiles
 ```
 
-
 ```{r}
 fig_cluster_size <- plotClusterSize(specs, k_range, n_total_specs,
                                     title, x_range)
 fig_cluster_size
 ```
+
 ```{r}
 fig_sample_size <- plotSampleSize(specs, k_range, n_total_specs,
                                   title, x_range)
 fig_sample_size
 ```
 
-
 ```{r}
 fig_spec_tiles <- plotSpecTiles(specs, n_total_specs, spec_fill_data,
-                                labels, colors, k_range, title, x_range)
+                                labels, colors, k_range, title, x_range, fill_levels)
 fig_spec_tiles
 ```

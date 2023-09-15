@@ -1,27 +1,34 @@
 import numpy as np
 import pandas as pd
-from rpy2.robjects.packages import importr
-from rpy2.robjects import ListVector
 from tqdm import tqdm
+from user_fit import spec_list_lvl_2, spec_list_lvl_3
 
-def generate_boot_data(specs, n_iter, data):
-    specs_means = sorted(specs["mean"])
-    study_sets = np.unique(specs["set"])
-    study_sets = [[int(x) for x in ss.split(",")] for ss in study_sets]
+def generate_boot_data(specs, n_iter, data, colmap, level, save_path):
+    effect_sets = np.unique(specs["set_es"])
+    effect_sets = [[int(x) for x in es.split(",")] for es in effect_sets]
     n_specs = len(specs)
     res = np.zeros((n_specs, n_iter))
 
+    key_z = colmap["key_z"]
+    key_z_se = colmap["key_z_se"]
+    key_r = colmap["key_r"]
+    key_r_se = colmap["key_r_se"]
+    key_n = colmap["key_n"]
+
     for col in tqdm(range(n_iter)):
-        z_se = 1 / np.sqrt(data["N"])
-        data["z"] = np.random.normal(0, z_se, len(data))
-        data["z_se"] = z_se
-        data["r"] = np.tanh(data["z"])
-        data["r_se"] = (1 - data["r"]**2) * z_se
+        z_se = 1 / np.sqrt(data[key_n])
+        data[key_z] = np.random.normal(0, z_se, len(data))
+        data[key_z_se] = z_se
+        data[key_r] = np.tanh(data[key_z])
+        data[key_r_se] = (1 - data[key_r]**2) * z_se
 
         boot_effects = []
-        for ss in study_sets:
-            ss = np.array(ss) - 1
-            boot_effects.append(spec_list(ss, data))
+        if level == 2:
+            for es in effect_sets:
+                boot_effects.append(spec_list_lvl_2(es, data, colmap))
+        elif level == 3:
+            for es in effect_sets:
+                boot_effects.append(spec_list_lvl_3(es, data, colmap))
 
         res[:, col] = sorted(np.array(boot_effects).flatten())
     
@@ -30,39 +37,11 @@ def generate_boot_data(specs, n_iter, data):
     boot_ub = boot_bounds[1]
 
     boot_data_dict = {
-        "x_var": [i+1 for i in range(n_specs)],
-        "obs": specs_means,
+        "rank": [i+1 for i in range(n_specs)],
+        "obs": specs["mean"],
         "boot_lb": boot_lb,
         "boot_ub": boot_ub
     }
     boot_data = pd.DataFrame(boot_data_dict)
-    boot_data.head()
-
-def spec_list(study_ids, data):
-    metafor = importr('metafor')
-
-    temp = data.iloc[study_ids]
-    control = dict(stepadj=0.5, maxiter=2000)
-    r = temp["r"]
-    r_se = temp["r_se"]
-    z = temp["z"]
-    z_se = temp["z_se"]
-    fits = [
-        metafor.rma(yi=z, sei=z_se, method="FE"),
-        metafor.rma(yi=z, sei=z_se, method="DL"),
-        metafor.rma(yi=z, sei=z_se, method="REML", control=ListVector(control)),
-        metafor.rma(yi=z, sei=z_se, method="FE", weights=1/len(temp)),
-        metafor.rma(yi=r, sei=r_se, method="FE"),
-        metafor.rma(yi=r, sei=r_se, method="DL"),
-        metafor.rma(yi=r, sei=r_se, method="REML", control=ListVector(control)),
-        metafor.rma(yi=r, sei=r_se, method="FE", weights=1/len(temp))
-    ]
-    spec = []
-    for i, fit in enumerate(fits):
-        mod = dict(zip(fit.names, list(fit)))
-        b = mod["b"].item()
-        if i <= 3:
-            spec.append(np.tanh(b))
-        else:
-            spec.append(b)
-    return spec
+    boot_data.to_csv(save_path, index=False)
+    return boot_data

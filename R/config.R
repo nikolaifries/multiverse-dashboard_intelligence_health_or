@@ -16,10 +16,13 @@ readConfig <- function(config_path) {
     # Get values and value labels
     values <- json_data$which$values[[i]]
     values_labels <- json_data$which$values_labels[[i]]
+    add_all_value = json_data$which$add_all_values[[i]]
     
     # Append all-value (e.g. all_sex, all_race)
-    all_value <- paste("all_", key, sep = "")
-    values <- append(values, all_value)
+    if (add_all_value) {
+      all_value <- paste("all_", key, sep = "")
+      values <- append(values, all_value)
+    }
     
     # Add to list of which-factors
     which_lists[[key]] <- values
@@ -32,9 +35,12 @@ readConfig <- function(config_path) {
       l <- paste(key_label, value_label, sep = ": ")
       labels <- c(labels, l)
     }
+    
     # Add all-label (e.g. "sex: either")
-    l <- paste(key_label, all_label, sep = ": ")
-    labels <- c(labels, l)
+    if (add_all_value) {
+      l <- paste(key_label, all_label, sep = ": ")
+      labels <- c(labels, l)
+    }
   }
   
   for (i in 1:n_how) {

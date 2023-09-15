@@ -33,7 +33,7 @@ app = Dash(__name__, external_stylesheets=external_stylesheets,
            prevent_initial_callbacks="initial_duplicate", suppress_callback_exceptions=True)
 
 app.layout = dbc.Container([
-    dcc.Store(id="memory"),
+    dcc.Store(id="memory", storage_type="session"),
     get_header(),
     dbc.Row([
         dbc.Tabs([
@@ -67,7 +67,9 @@ app.layout = dbc.Container([
     Input("memory", "data"),
     prevent_initial_call=True
 )
-def fill_data_table(memory):
+def get_tab_content(memory):
+    if memory is None:
+        return None, None, None
     config = memory["config"]
     data = pd.DataFrame(memory["data"])
     data_tab_content = get_data_tab(config, data)
@@ -124,7 +126,8 @@ def upload(memory, filenames, contents):
         config["how_lists"],
         specs
     )
-    colors = get_colors(3) # TODO
+    fill_levels = len(np.unique([v for v in spec_fill_data.values()]))
+    colors = get_colors(fill_levels)
 
     k_min = config["k_min"]
     k_max = max(specs["k"])
@@ -401,6 +404,7 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
     specs = pd.DataFrame(memory["specs"])
     cluster_fill_data = memory["cluster_fill_data"]
     spec_fill_data = memory["spec_fill_data"]
+    fill_levels = len(np.unique([v for v in spec_fill_data.values()]))
     colors = memory["colors"]
     k_range = memory["k_range"]
     n_total_specs = memory["n_total_specs"]
@@ -484,6 +488,7 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
         colors,
         level,
         title,
+        fill_levels,
         y_ticks,
         y_limits
     )

@@ -1,9 +1,6 @@
 source("user_fit.R")
 
 generateBootData <- function(specs, n_iter, data, colmap, level, save_path) {
-  # Sort effect sizes in ascending order
-  specs_means <- sort(specs$mean)
-  
   # Get sets of studies for each specification
   effect_sets <- as.vector(unique(specs$set_es))
   effect_sets <- lapply(strsplit(effect_sets, ","), as.numeric)
@@ -48,7 +45,7 @@ generateBootData <- function(specs, n_iter, data, colmap, level, save_path) {
   # Store bootstrapped data in data frame
   boot_data <- data.frame(
     rank = 1:n_specs,
-    obs = specs_means,
+    obs = specs$mean,
     boot_lb,
     boot_ub
   )

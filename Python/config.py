@@ -20,9 +20,11 @@ def read_config(data=None, path=None):
 
         values = json_data["which"]["values"][i]
         values_labels = json_data["which"]["values_labels"][i]
+        add_all_value = json_data["which"]["add_all_values"][i]
 
-        all_value = f"all_{key}"
-        values.append(all_value)
+        if add_all_value:
+            all_value = f"all_{key}"
+            values.append(all_value)
 
         which_lists[key] = values
 
@@ -31,8 +33,10 @@ def read_config(data=None, path=None):
         for value_label in values_labels:
             l = f"{key_label}: {value_label}"
             labels.append(l)
-        l = f"{key_label}: {all_label}"
-        labels.append(l)
+        
+        if add_all_value:
+            l = f"{key_label}: {all_label}"
+            labels.append(l)
 
     for i in range(n_how):
         key = json_data["how"]["keys"][i]
