@@ -7,6 +7,7 @@ pandas2ri.activate()
 os.environ['R_HOME'] = "C:\\Program Files\\R\\R-4.3.1"
 metafor = importr('metafor')
 
+
 def spec_list_lvl_2(e_ids, data, colmap):
     key_z = colmap["key_z"]
     key_z_se = colmap["key_z_se"]
@@ -24,11 +25,13 @@ def spec_list_lvl_2(e_ids, data, colmap):
     fits = [
         metafor.rma(yi=z, sei=z_se, method="FE"),
         metafor.rma(yi=z, sei=z_se, method="DL"),
-        metafor.rma(yi=z, sei=z_se, method="REML", control=ListVector(control)),
+        metafor.rma(yi=z, sei=z_se, method="REML",
+                    control=ListVector(control)),
         metafor.rma(yi=z, sei=z_se, method="FE", weights=1/len(temp)),
         metafor.rma(yi=r, sei=r_se, method="FE"),
         metafor.rma(yi=r, sei=r_se, method="DL"),
-        metafor.rma(yi=r, sei=r_se, method="REML", control=ListVector(control)),
+        metafor.rma(yi=r, sei=r_se, method="REML",
+                    control=ListVector(control)),
         metafor.rma(yi=r, sei=r_se, method="FE", weights=1/len(temp))
     ]
     spec = []
@@ -41,7 +44,10 @@ def spec_list_lvl_2(e_ids, data, colmap):
             spec.append(b)
     return spec
 
-def fit_model_lvl_2(effect, method, data, colmap):
+
+def fit_model_lvl_2(how_values, data, colmap):
+    effect = how_values["effect"]
+    method = how_values["ma_method"]
     if effect == "r":
         key_r = colmap["key_r"]
         key_r_se = colmap["key_r_se"]
@@ -79,6 +85,7 @@ def fit_model_lvl_2(effect, method, data, colmap):
 
     return res
 
+
 def spec_list_lvl_3(e_ids, data, colmap):
     key_z = colmap["key_z"]
     key_z_var = colmap["key_z_var"]
@@ -96,10 +103,14 @@ def spec_list_lvl_3(e_ids, data, colmap):
     yi_r = temp[key_r]
     V_r = temp[key_r_var]
     fits = [
-        metafor.rma(data = temp, yi=yi_z, sei=V_z, method="REML", test="t", random=random),
-        metafor.rma(data = temp, yi=yi_z, sei=V_z, method="ML", test="t", random=random),
-        metafor.rma(data = temp, yi=yi_z, sei=V_z, method="REML", test="z", random=random),
-        metafor.rma(data = temp, yi=yi_z, sei=V_z, method="ML", test="z", random=random)
+        metafor.rma(data=temp, yi=yi_z, sei=V_z,
+                    method="REML", test="t", random=random),
+        metafor.rma(data=temp, yi=yi_z, sei=V_z,
+                    method="ML", test="t", random=random),
+        metafor.rma(data=temp, yi=yi_z, sei=V_z,
+                    method="REML", test="z", random=random),
+        metafor.rma(data=temp, yi=yi_z, sei=V_z,
+                    method="ML", test="z", random=random)
     ]
     spec = []
     for i, fit in enumerate(fits):
@@ -112,7 +123,10 @@ def spec_list_lvl_3(e_ids, data, colmap):
     return spec
 
 
-def fit_model_lvl_3(effect, method, test, data, colmap):
+def fit_model_lvl_3(how_values, data, colmap):
+    effect = how_values["effect"]
+    method = how_values["ma_method"]
+    test_type = how_values["test"][0]
     if effect == "r":
         key_r = colmap["key_r"]
         key_r_var = colmap["key_r_var"]
@@ -129,12 +143,12 @@ def fit_model_lvl_3(effect, method, test, data, colmap):
     formula_string = f"~ 1 | {key_c_id}/{key_e_id}"
     random = Formula(formula_string)
 
-    test_type = test[0]
-
     if method == "REML":
-        fit = metafor.rma_mv(yi=yi, V=V, method="REML", test=test_type, random=random, data=data)
+        fit = metafor.rma_mv(yi=yi, V=V, method="REML",
+                             test=test_type, random=random, data=data)
     elif method == "ML":
-        fit = metafor.rma_mv(yi=yi, V=V, method="ML", test=test_type, random=random, data=data)
+        fit = metafor.rma_mv(yi=yi, V=V, method="ML",
+                             test=test_type, random=random, data=data)
 
     mod = dict(zip(fit.names, list(fit)))
     res = {

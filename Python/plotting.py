@@ -2,6 +2,7 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+
 def get_spec_fill_data(n_which, which_lists, n_how, how_lists, specs):
     group_factors = dict(which_lists, **how_lists)
     group_factor_values = [v for vals in group_factors.values() for v in vals]
@@ -12,10 +13,12 @@ def get_spec_fill_data(n_which, which_lists, n_how, how_lists, specs):
 
     for rank in specs["rank"]:
         spec = specs[specs["rank"] == rank]
-        spec_id = [int(l in spec.iloc[:, 0:n_factors].values) for l in group_factor_values]
+        spec_id = [int(l in spec.iloc[:, 0:n_factors].values)
+                   for l in group_factor_values]
         spec_fill_data[f"{rank}"] = np.array(spec_id) * spec["k"].item()
 
     return spec_fill_data
+
 
 def get_cluster_fill_data(data, specs, colmap):
     key_c_id = colmap["key_c_id"]
@@ -38,9 +41,11 @@ def get_cluster_fill_data(data, specs, colmap):
         cluster_fill_data[f"{rank}"] = np.flip(fills)
 
     c_ids = sorted(data[key_c_id].unique())
-    cluster_fill_data["labels"] = [data[data[key_c_id] == c_id].iloc[0][key_c] for c_id in c_ids]
+    cluster_fill_data["labels"] = [
+        data[data[key_c_id] == c_id].iloc[0][key_c] for c_id in c_ids]
 
     return cluster_fill_data
+
 
 def get_colors(fill_levels):
     # TODO
@@ -48,10 +53,12 @@ def get_colors(fill_levels):
               "#FFFFBF", "#E6F598", "#ABDDA4", "#66C2A5", "#3288BD", "#5E4FA2"]
     return colors
 
+
 def _get_color_scale(colors, fill_levels):
     color_indices = np.linspace(1, len(colors), fill_levels - 1, dtype=int) - 1
     color_scale = [colors[ci] for ci in color_indices]
     return color_scale
+
 
 def plot_cluster_tiles(specs, cluster_fill_data, n_total_specs, title):
     cluster_tiles = _cluster_tiles(specs, cluster_fill_data, n_total_specs)
@@ -62,14 +69,17 @@ def plot_cluster_tiles(specs, cluster_fill_data, n_total_specs, title):
     fig.update_yaxes(**cluster_tiles["yaxes_args"])
     common_args = _get_common_args(n_total_specs, title)
     fig.update_yaxes(**common_args["y"])
-    fig.update_xaxes(**common_args["x"], ticks="outside", title="Specification Number")
+    fig.update_xaxes(
+        **common_args["x"], ticks="outside", title="Specification Number")
     fig.update_layout(common_args["layout"], width=1000, height=600)
     return fig
+
 
 def plot_spec_tiles(specs, n_total_specs, spec_fill_data, labels, colors,
                     k_range, title, fill_levels):
     color_scale = _get_color_scale(colors, fill_levels)
-    spec_tiles = _spec_tiles(specs, spec_fill_data, labels, n_total_specs, color_scale, k_range)
+    spec_tiles = _spec_tiles(specs, spec_fill_data,
+                             labels, n_total_specs, color_scale, k_range)
     fig = go.Figure()
     fig.add_trace(spec_tiles["go"])
     for hline_args in spec_tiles["hline_args"]:
@@ -77,9 +87,11 @@ def plot_spec_tiles(specs, n_total_specs, spec_fill_data, labels, colors,
     fig.update_yaxes(**spec_tiles["yaxes_args"])
     common_args = _get_common_args(n_total_specs, title)
     fig.update_yaxes(**common_args["y"])
-    fig.update_xaxes(**common_args["x"], ticks="outside", title="Specification Number")
+    fig.update_xaxes(
+        **common_args["x"], ticks="outside", title="Specification Number")
     fig.update_layout(common_args["layout"], width=1000, height=600)
     return fig
+
 
 def plot_cluster_size(specs, k_range, n_total_specs, title):
     cluster_size = _cluster_size(specs, k_range)
@@ -88,9 +100,11 @@ def plot_cluster_size(specs, k_range, n_total_specs, title):
     fig.update_yaxes(**cluster_size["yaxes_args"])
     common_args = _get_common_args(n_total_specs, title)
     fig.update_yaxes(**common_args["y"])
-    fig.update_xaxes(**common_args["x"], ticks="outside", title="Specification Number")
+    fig.update_xaxes(
+        **common_args["x"], ticks="outside", title="Specification Number")
     fig.update_layout(common_args["layout"], width=1000, height=200)
     return fig
+
 
 def plot_sample_size(specs, k_range, n_total_specs, title):
     sample_size = _sample_size(specs, k_range)
@@ -99,9 +113,11 @@ def plot_sample_size(specs, k_range, n_total_specs, title):
     fig.update_yaxes(**sample_size["yaxes_args"])
     common_args = _get_common_args(n_total_specs, title)
     fig.update_yaxes(**common_args["y"])
-    fig.update_xaxes(**common_args["x"], ticks="outside", title="Specification Number")
+    fig.update_xaxes(
+        **common_args["x"], ticks="outside", title="Specification Number")
     fig.update_layout(common_args["layout"], width=1000, height=200)
     return fig
+
 
 def plot_caterpillar(specs, n_total_specs, colors, k_range, title, fill_levels):
     y_limits = _get_y_limits(specs)
@@ -122,11 +138,13 @@ def plot_caterpillar(specs, n_total_specs, colors, k_range, title, fill_levels):
     fig.update_yaxes(**caterpillar["yaxes_args"])
     common_args = _get_common_args(n_total_specs, title)
     fig.update_yaxes(**common_args["y"])
-    fig.update_xaxes(**common_args["x"], ticks="outside", title="Specification Number")
+    fig.update_xaxes(
+        **common_args["x"], ticks="outside", title="Specification Number")
     fig.update_layout(common_args["layout"], width=1000, height=300)
     return fig
 
-def plot_multiverse(specs, n_total_specs, k_range, cluster_fill_data, 
+
+def plot_multiverse(specs, n_total_specs, k_range, cluster_fill_data,
                     spec_fill_data, labels, colors, level, title, fill_levels,
                     y_ticks=None, y_limits=None):
     if level == 2:
@@ -211,9 +229,11 @@ def plot_multiverse(specs, n_total_specs, k_range, cluster_fill_data,
     common_args = _get_common_args(n_total_specs, title)
     fig.update_yaxes(**common_args["y"])
     fig.update_xaxes(**common_args["x"])
-    fig.update_layout(common_args["layout"], width=1500, height=1000 if level == 2 else 1667)
+    fig.update_layout(common_args["layout"], width=1500,
+                      height=1000 if level == 2 else 1667)
 
     return fig
+
 
 def _get_common_args(n_total_specs, title):
     yaxes_args = {
@@ -245,7 +265,7 @@ def _get_common_args(n_total_specs, title):
         "layout": layout_args
     }
     return common_args
-    
+
 
 def _cluster_tiles(specs, cluster_fill_data, n_total_specs):
     n_clusters = len(cluster_fill_data["labels"])
@@ -268,8 +288,9 @@ def _cluster_tiles(specs, cluster_fill_data, n_total_specs):
         spec_infos.append(("<br>").join(spec_info))
 
     customdata = np.tile(spec_infos, (n_clusters, 1))
-    
-    color_scale = [f"rgba(9, 175, 0, {round(i, 1)})" for i in np.arange(0, 1.2, 0.2)]
+
+    color_scale = [
+        f"rgba(9, 175, 0, {round(i, 1)})" for i in np.arange(0, 1.2, 0.2)]
     graph_object = go.Heatmap(
         x=[rank for rank in range(1, n_total_specs + 1)],
         z=c_tiles,
@@ -302,6 +323,7 @@ def _cluster_tiles(specs, cluster_fill_data, n_total_specs):
         "yaxes_args": yaxes_args,
         "hline_args": hline_args
     }
+
 
 def _caterpillar(specs, n_total_specs, color_scale, k_range, y_ticks,
                  y_limits):
@@ -337,12 +359,13 @@ def _caterpillar(specs, n_total_specs, color_scale, k_range, y_ticks,
         "line_color": "black",
         "line_width": 1
     }
-    
+
     return {
         "go": [go_line, go_ci],
         "yaxes_args": yaxes_args,
         "hline_args": hline_args
     }
+
 
 def _sample_size(specs, k_range):
     graph_object = go.Bar(
@@ -364,6 +387,7 @@ def _sample_size(specs, k_range):
         "yaxes_args": yaxes_args
     }
 
+
 def _cluster_size(specs, k_range):
     graph_object = go.Bar(
         x=specs["rank"],
@@ -383,6 +407,7 @@ def _cluster_size(specs, k_range):
         "go": graph_object,
         "yaxes_args": yaxes_args
     }
+
 
 def _spec_tiles(specs, spec_fill_data, labels, n_total_specs,
                 color_scale, k_range):
@@ -445,6 +470,7 @@ def _spec_tiles(specs, spec_fill_data, labels, n_total_specs,
         "xaxes_args": xaxes_args
     }
 
+
 def _get_y_intercepts(y_labels):
     group_labels = [l.split(":")[0] for l in y_labels]
     cumulative_n_groups = []
@@ -457,6 +483,7 @@ def _get_y_intercepts(y_labels):
     y_intercepts = np.array(cumulative_n_groups) + 0.5
     return y_intercepts
 
+
 def _get_y_limits(specs):
     y_l_limit = min(specs["lb"])
     y_u_limit = max(specs["ub"])
@@ -465,13 +492,15 @@ def _get_y_limits(specs):
                 y_u_limit + (y_range_diff * 0.1)]
     return y_limits
 
+
 def _get_y_ticks(y_limits):
     y_ticks = np.arange(
         round(y_limits[0], 1),
-        round(y_limits[1], 1), 
+        round(y_limits[1], 1),
         round((y_limits[1] - y_limits[0]) / 5, 1)
     ).round(1)
     return y_ticks
+
 
 def plot_treemap(data, title, colmap):
     key_c = colmap["key_c"]
@@ -489,7 +518,7 @@ def plot_treemap(data, title, colmap):
     parents.extend(data[key_c])
     colors.extend(data[key_n])
 
-    infotext="ES ID: <b>" + data[key_e_id].astype(str) + "</b><br><br>" + \
+    infotext = "ES ID: <b>" + data[key_e_id].astype(str) + "</b><br><br>" + \
         "ES = " + round(data[key_main_es], 3).astype(str) + "<br>" + \
         " +/- " + round(data[key_main_es_se], 3).astype(str) + "<br>" + \
         "N = " + data[key_n].astype(str) + "<br>"
@@ -527,6 +556,7 @@ def plot_treemap(data, title, colmap):
     )
     return fig
 
+
 def _inferential(boot_data):
     go_mean = go.Scatter(
         x=boot_data["rank"],
@@ -562,6 +592,7 @@ def _inferential(boot_data):
         "yaxes_args": yaxes_args
     }
 
+
 def plot_inferential(boot_data, title, n_total_specs):
     inferential = _inferential(boot_data)
     fig = go.Figure()
@@ -571,10 +602,12 @@ def plot_inferential(boot_data, title, n_total_specs):
     fig.update_yaxes(**inferential["yaxes_args"])
     common_args = _get_common_args(n_total_specs, title)
     fig.update_yaxes(**common_args["y"])
-    fig.update_xaxes(**common_args["x"], ticks="outside", title="Specification Number")
+    fig.update_xaxes(
+        **common_args["x"], ticks="outside", title="Specification Number")
     fig.update_layout(common_args["layout"], width=1000, height=300)
 
     return fig
+
 
 def _p_hist(specs):
     significant = specs["p"] < 0.05
@@ -605,6 +638,7 @@ def _p_hist(specs):
         "yaxes_args": yaxes_args
     }
 
+
 def plot_p_hist(specs, title, n_total_specs):
     p_hist = _p_hist(specs)
     fig = go.Figure()
@@ -614,7 +648,8 @@ def plot_p_hist(specs, title, n_total_specs):
     common_args = _get_common_args(n_total_specs, title)
     fig.update_yaxes(**common_args["y"])
     del common_args["x"]["range"]
-    fig.update_xaxes(**common_args["x"], ticks="outside", title="Specification p-Values")
+    fig.update_xaxes(
+        **common_args["x"], ticks="outside", title="Specification p-Values")
     fig.update_layout(common_args["layout"], width=300, height=500)
 
     return fig

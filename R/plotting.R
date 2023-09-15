@@ -73,8 +73,8 @@ plotCaterpillar <- function(specs, n_total_specs, colors, k_range,
   
   fig <- ggplot(data = specs, aes(x = rank, y = mean)) +
     geom_errorbar(aes(ymin = lb, ymax = ub, col = as.factor(k)), width = 0, size = 0.25) +
-    geom_line(col = "black", size = 0.25) + 
-    geom_hline(yintercept = 0, linetype = 2, size = 0.25) +
+    geom_line(col = "black", linewidth = 0.25) + 
+    geom_hline(yintercept = 0, linetype = 2, linewidth = 0.25) +
     scale_x_continuous(name = "") +
     scale_y_continuous(name = "Summary effect (r)", breaks = y_breaks) + 
     scale_color_manual(values = color_scale) +
