@@ -8,7 +8,6 @@ This notebook contains all code required for **Multiverse Meta-Analyses**, inclu
 ## Imports
 
 ```{r}
-library(jsonlite)
 library(ggplot2)
 library(ggpubr)
 library(metafor)
@@ -26,9 +25,9 @@ source("user_data.R", local = knitr::knit_global())
 In this cell, set the **title**, the **working directory** and the **path to the dataset** for this analysis. The **config**, **preprocessed data**, **specs**, and **bootstrap data** paths depend on the working directory and the title. This naming convention can be changed, but the prefixes (i.e. `boot`, `config`, `data` and `specs`) are required for the **Dashboard** to work. The configuration file must exist, all other data can either be loaded or generated, using the boolean flags. The generated data will be stored at the specified paths, or loaded from that path.
 
 ```{r}
-TITLE <- "R2D2_2"
-DIR <- "../data/R2D2-Meta-Analysis"
-DATA_PATH <- paste0(DIR, "/R2D2.csv")
+TITLE <- "IandR_2"
+DIR <- "../data/IandR-Meta-Analysis"
+DATA_PATH <- paste0(DIR, "/IandR.sav")
 
 # TITLE <- "Chernobyl"
 # DIR <- "../data/Chernobyl-Meta-Analysis"
@@ -38,7 +37,7 @@ DATA_PATH <- paste0(DIR, "/R2D2.csv")
 # DIR = "../data/IandR-Meta-Analysis"
 # DATA_PATH = paste0(DIR, "/iandr.sav")
 
-PREPROCESS_DATA <- F # Load (False) or preprocess data (True)
+PREPROCESS_DATA <- T # Load (False) or preprocess data (True)
 GENERATE_SPECS <- T # Load (False) or generate specs (True)
 GENERATE_BOOTDATA <- T # Load (False) or generate boot data (True)
 
@@ -93,7 +92,7 @@ In this cell, the dataset is either preprocessed and stored at `PP_DATA_PATH`, o
 if (PREPROCESS_DATA) {
   ma_data <- preprocessData(DATA_PATH, title = TITLE)
 } else {
-  ma_data <- read.table(PP_DATA_PATH, sep = ",", header=TRUE)
+  ma_data <- read.table(PP_DATA_PATH, sep = ",", header = TRUE)
 }
 print(dim(ma_data))
 head(ma_data)
@@ -123,7 +122,7 @@ if (GENERATE_SPECS) {
     SPECS_PATH
   )
 } else {
-  specs <- read.table(SPECS_PATH, sep = ",", header=TRUE)
+  specs <- read.table(SPECS_PATH, sep = ",", header = TRUE)
 }
 print(dim(specs))
 head(specs)
@@ -144,7 +143,7 @@ if (GENERATE_BOOTDATA) {
     BOOT_PATH
   )
 } else {
-  boot_data <- read.table(BOOT_PATH, sep = ",", header=TRUE)
+  boot_data <- read.table(BOOT_PATH, sep = ",", header = TRUE)
 }
 print(dim(boot_data))
 head(boot_data)
@@ -170,13 +169,13 @@ colors <- getColors(fill_levels)
 Here we define important variables for plotting that will be reused in several plots, to improve readability.
 
 ```{r}
-colmap <- config$colmap                     # Column-mapping from the configuration file
-k_range <- c(config$k_min, max(specs$k))    # Range of k-values (# Samples)
-labels <- config$labels                     # Factor-labels
-level <- config$level                       # Meta-analytic level (2 or 3)
-n_total_specs <- nrow(specs)                # Total number of specifications
-title <- config$title                       # Title of Meta-Analysis
-x_range <- c(1 - 0.5, n_total_specs + 0.5)  # x-axis range
+colmap <- config$colmap # Column-mapping from the configuration file
+k_range <- c(config$k_min, max(specs$k)) # Range of k-values (# Samples)
+labels <- config$labels # Factor-labels
+level <- config$level # Meta-analytic level (2 or 3)
+n_total_specs <- nrow(specs) # Total number of specifications
+title <- config$title # Title of Meta-Analysis
+x_range <- c(1 - 0.5, n_total_specs + 0.5) # x-axis range
 ```
 
 ### Inferential Specification Plot
@@ -210,42 +209,54 @@ fig_gosh
 ### Multiverse
 
 ```{r}
-fig_multiverse <- plotMultiverse(specs, n_total_specs, k_range, cluster_fill_data,
-                                 spec_fill_data, labels, colors, level, title,
-                                 x_range, fill_levels)
+fig_multiverse <- plotMultiverse(
+  specs, n_total_specs, k_range, cluster_fill_data,
+  spec_fill_data, labels, colors, level, title,
+  x_range, fill_levels
+)
 fig_multiverse
 
-ggsave("multiverse.pdf", fig_multiverse, width = 16*1.2, height = 25*1.2, dpi = 600, units = "cm")
+ggsave("multiverse.pdf", fig_multiverse, width = 16 * 1.2, height = 50 * 1.2, dpi = 600, units = "cm")
 ```
 
 ### Individual Multiverse Components
 
 ```{r}
-fig_caterpillar <- plotCaterpillar(specs, n_total_specs, colors, k_range,
-                                   title, x_range, fill_levels)
+fig_caterpillar <- plotCaterpillar(
+  specs, n_total_specs, colors, k_range,
+  title, x_range, fill_levels
+)
 fig_caterpillar
 ```
 
 ```{r}
-fig_cluster_tiles <- plotClusterTiles(specs, cluster_fill_data, n_total_specs,
-                                      title, x_range)
+fig_cluster_tiles <- plotClusterTiles(
+  specs, cluster_fill_data, n_total_specs,
+  title, x_range
+)
 fig_cluster_tiles
 ```
 
 ```{r}
-fig_cluster_size <- plotClusterSize(specs, k_range, n_total_specs,
-                                    title, x_range)
+fig_cluster_size <- plotClusterSize(
+  specs, k_range, n_total_specs,
+  title, x_range
+)
 fig_cluster_size
 ```
 
 ```{r}
-fig_sample_size <- plotSampleSize(specs, k_range, n_total_specs,
-                                  title, x_range)
+fig_sample_size <- plotSampleSize(
+  specs, k_range, n_total_specs,
+  title, x_range
+)
 fig_sample_size
 ```
 
 ```{r}
-fig_spec_tiles <- plotSpecTiles(specs, n_total_specs, spec_fill_data,
-                                labels, colors, k_range, title, x_range, fill_levels)
+fig_spec_tiles <- plotSpecTiles(
+  specs, n_total_specs, spec_fill_data,
+  labels, colors, k_range, title, x_range, fill_levels
+)
 fig_spec_tiles
 ```

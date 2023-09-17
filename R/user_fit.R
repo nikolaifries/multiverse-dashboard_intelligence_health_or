@@ -48,7 +48,7 @@ specListLvl2 <- function(e_ids, data, colmap) {
   # Compute summary effects for each how-factor value combination
   ctrl <- list(stepadj = 0.5, maxiter = 2000)
   w <- 1 / nrow(temp)
-  fits <- c(
+  fits <- list(
     rma(yi = yi_z, sei = sei_z, method = "FE", data = temp),
     rma(yi = yi_z, sei = sei_z, method = "DL", data = temp),
     rma(yi = yi_z, sei = sei_z, method = "REML", control = ctrl, data = temp),
@@ -179,7 +179,7 @@ specListLvl3 <- function(e_ids, data, colmap) {
   # === Rewrite list of meta-analytic models to compute as desired
   # Compute summary effects for each how-factor value combination
   ctrl <- list(iter.max = 1000, rel.tol = 1e-8)
-  fits <- c(
+  fits <- list(
     rma.mv(
       data = temp, yi = yi_z, V = V_z,
       method = "REML", test = "t", random = formula, control = ctrl
