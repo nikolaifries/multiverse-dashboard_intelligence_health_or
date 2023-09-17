@@ -1,0 +1,42 @@
+{
+    "title": "",
+    "level": 0,
+    "k_min": 0,
+    "n_boot_iter": 0,
+    "colmap": {
+        "key_c": "",
+        "key_c_id": "c_id",
+        "key_e_id": "e_id",
+        "key_z": "",
+        "key_z_se": "",
+        "key_r": "",
+        "key_r_se": "",
+        "key_main_es": "",
+        "key_main_es_se": "",
+        "key_n": ""
+    },
+    "which": {
+        "n": 0,
+        "keys": [],
+        "keys_labels": [],
+        "add_all_values": [],
+        "values": [
+            []
+        ],
+        "values_labels": [
+            []
+        ],
+        "all_label": "either"
+    },
+    "how": {
+        "n": 0,
+        "keys": [],
+        "keys_labels": [],
+        "values": [
+            []
+        ],
+        "values_labels": [
+            []
+        ]
+    }
+}

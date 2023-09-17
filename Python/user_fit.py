@@ -37,7 +37,7 @@ def spec_list_lvl_2(e_ids, data, colmap):
     Returns:
         List of computed summary effects.
     """
-    # === USER EDIT HERE
+    # === USER EDIT HERE ===
     # === Get the desired effect sizes from the data
     # Get relevant keys from colmap
     key_z = colmap["key_z"]
@@ -53,7 +53,7 @@ def spec_list_lvl_2(e_ids, data, colmap):
     r = temp[key_r]
     r_se = temp[key_r_se]
 
-    # === USER EDIT HERE
+    # === USER EDIT HERE ===
     # === Rewrite list of meta-analytic models to compute as desired
     # Compute summary effects for each how-factor value combination
     ctrl = ListVector(dict(stepadj=0.5, maxiter=2000))
@@ -74,7 +74,7 @@ def spec_list_lvl_2(e_ids, data, colmap):
     for i, fit in enumerate(fits):
         mod = dict(zip(fit.names, list(fit)))
         b = mod["b"].item()
-        # === USER EDIT HERE
+        # === USER EDIT HERE ===
         # === Edit this if-clause, depending on which models use a z effect size
         # Transform z to r
         if i <= 3:
@@ -97,7 +97,7 @@ def fit_model_lvl_2(how_values, data, colmap):
         Dictionary of relevant model result values
         (mean, lower and upper bound, p-value).
     """
-    # === USER EDIT HERE
+    # === USER EDIT HERE ===
     # === Save configurated how-values in dedicated variables
     # Get how-factor values
     effect = how_values["effect"]
@@ -115,7 +115,7 @@ def fit_model_lvl_2(how_values, data, colmap):
         yi = data[key_z]
         sei = data[key_z_se]
 
-    # === USER EDIT HERE
+    # === USER EDIT HERE ===
     # === Rewrite this part according to your needs
     # Fit meta-analytic model
     if method == "FE":
@@ -158,7 +158,7 @@ def spec_list_lvl_3(e_ids, data, colmap):
     Returns:
         List of computed summary effects.
     """
-    # === USER EDIT HERE
+    # === USER EDIT HERE ===
     # === Get the desired effect sizes from the data
     # Get relevant keys from colmap
     key_z = colmap["key_z"]
@@ -179,7 +179,7 @@ def spec_list_lvl_3(e_ids, data, colmap):
     formula_string = f"~ 1 | {key_c_id}/{key_e_id}"
     formula = Formula(formula_string)
 
-    # === USER EDIT HERE
+    # === USER EDIT HERE ===
     # === Rewrite list of meta-analytic models to compute as desired
     # Compute summary effects for each how-factor value combination
     fits = [
@@ -197,7 +197,7 @@ def spec_list_lvl_3(e_ids, data, colmap):
     for i, fit in enumerate(fits):
         mod = dict(zip(fit.names, list(fit)))
         b = mod["b"].item()
-        # === USER EDIT HERE
+        # === USER EDIT HERE ===
         # === Edit this if-clause, depending on which models use a z effect size
         # Transform z to r
         if i <= 3:
@@ -220,7 +220,7 @@ def fit_model_lvl_3(how_values, data, colmap):
         Dictionary of relevant model result values
         (mean, lower and upper bound, p-value).
     """
-    # === USER EDIT HERE
+    # === USER EDIT HERE ===
     # === Save configurated how-values in dedicated variables
     # Get how-factor values
     effect = how_values["effect"]
@@ -245,7 +245,7 @@ def fit_model_lvl_3(how_values, data, colmap):
     formula_string = f"~ 1 | {key_c_id}/{key_e_id}"
     formula = Formula(formula_string)
 
-    # === USER EDIT HERE
+    # === USER EDIT HERE ===
     # === Rewrite this part according to your needs
     # Fit meta-analytic model
     if method == "REML":

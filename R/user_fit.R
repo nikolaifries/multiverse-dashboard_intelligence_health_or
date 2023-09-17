@@ -27,7 +27,7 @@ library(metafor)
 #      List of computed summary effects.
 #
 specListLvl2 <- function(e_ids, data, colmap) {
-  # === USER EDIT HERE
+  # === USER EDIT HERE ===
   # === Get the desired effect sizes from the data
   # Get relevant keys from colmap
   key_z <- colmap$key_z
@@ -43,7 +43,7 @@ specListLvl2 <- function(e_ids, data, colmap) {
   yi_r <- temp[[key_r]]
   sei_r <- temp[[key_r_se]]
 
-  # === USER EDIT HERE
+  # === USER EDIT HERE ===
   # === Rewrite list of meta-analytic models to compute as desired
   # Compute summary effects for each how-factor value combination
   ctrl <- list(stepadj = 0.5, maxiter = 2000)
@@ -64,7 +64,7 @@ specListLvl2 <- function(e_ids, data, colmap) {
   for (i in seq_along(fits)) {
     fit <- fits[[i]]
     b <- fit$b[[1]]
-    # === USER EDIT HERE
+    # === USER EDIT HERE ===
     # === Edit this if-clause, depending on which models use a z effect size
     # Transform z to r
     if (i <= 3) {
@@ -90,7 +90,7 @@ specListLvl2 <- function(e_ids, data, colmap) {
 #      (mean, lower and upper bound, p-value).
 #
 fitModelLvl2 <- function(how_values, data, colmap) {
-  # === USER EDIT HERE
+  # === USER EDIT HERE ===
   # === Save configurated how-values in dedicated variables
   # Get how-factor values
   effect <- how_values$effect
@@ -109,7 +109,7 @@ fitModelLvl2 <- function(how_values, data, colmap) {
     sei <- data[[key_z_se]]
   }
 
-  # === USER EDIT HERE
+  # === USER EDIT HERE ===
   # === Rewrite this part according to your needs
   # Fit meta-analytic model
   if (method == "FE") {
@@ -154,7 +154,7 @@ fitModelLvl2 <- function(how_values, data, colmap) {
 #      List of computed summary effects.
 #
 specListLvl3 <- function(e_ids, data, colmap) {
-  # === USER EDIT HERE
+  # === USER EDIT HERE ===
   # === Get the desired effect sizes from the data
   # Get relevant keys from colmap
   key_z <- colmap$key_z
@@ -175,7 +175,7 @@ specListLvl3 <- function(e_ids, data, colmap) {
   formula_string <- paste("~ 1 | ", key_c_id, "/", key_e_id)
   formula <- as.formula(formula_string)
 
-  # === USER EDIT HERE
+  # === USER EDIT HERE ===
   # === Rewrite list of meta-analytic models to compute as desired
   # Compute summary effects for each how-factor value combination
   ctrl <- list(iter.max = 1000, rel.tol = 1e-8)
@@ -203,7 +203,7 @@ specListLvl3 <- function(e_ids, data, colmap) {
   for (i in seq_along(fits)) {
     fit <- fits[[i]]
     b <- fit$b[[1]]
-    # === USER EDIT HERE
+    # === USER EDIT HERE ===
     # === Edit this if-clause, depending on which models use a z effect size
     # Transform z to r
     if (i <= 3) {
@@ -229,7 +229,7 @@ specListLvl3 <- function(e_ids, data, colmap) {
 #      (mean, lower and upper bound, p-value).
 #
 fitModelLvl3 <- function(how_values, data, colmap) {
-  # === USER EDIT HERE
+  # === USER EDIT HERE ===
   # === Save configurated how-values in dedicated variables
   # Get how-factor values
   effect <- how_values$effect
@@ -255,7 +255,7 @@ fitModelLvl3 <- function(how_values, data, colmap) {
   formula_string <- paste("~ 1 | ", key_c_id, "/", key_e_id)
   formula <- as.formula(formula_string)
 
-  # === USER EDIT HERE
+  # === USER EDIT HERE ===
   # === Rewrite this part according to your needs
   # Fit meta-analytic model
   if (method == "REML") {
