@@ -3,10 +3,13 @@ import dash_bootstrap_components as dbc
 import numpy as np
 from plotting import plot_treemap, plot_inferential, plot_p_hist
 
+
 def get_header():
     return dbc.Row([
-        dbc.Col(dcc.Markdown(id="outHeaderTitle", children="# Meta-Analysis"), width=4),
-        dbc.Col(dcc.Markdown(id="outHeaderLevel", children=""), width={"size": 2, "offset": 3}),
+        dbc.Col(dcc.Markdown(id="outHeaderTitle",
+                children="# Meta-Analysis"), width=4),
+        dbc.Col(dcc.Markdown(id="outHeaderLevel", children=""),
+                width={"size": 2, "offset": 3}),
         dbc.Col(dcc.Upload(
             id="inUpload",
             children=html.Div([
@@ -17,9 +20,9 @@ def get_header():
             className="upload"
         ), width=2),
         dbc.Col(
-            dcc.Markdown(id="outUpload", children="")
-        , width=1),
+            dcc.Markdown(id="outUpload", children=""), width=1),
     ], className="header")
+
 
 def get_data_tab(config, data):
     colmap = config["colmap"]
@@ -34,10 +37,13 @@ def get_data_tab(config, data):
             ], justify="between"), width=6),
         ]),
         dbc.Row([
-            dbc.Col(id="outDatatable", children=get_datatable(data, key_c_id), width=6),
-            dbc.Col(dcc.Graph(figure=plot_treemap(data, title, colmap), id="treemap"), width=6)
+            dbc.Col(id="outDatatable", children=get_datatable(
+                data, key_c_id), width=6),
+            dbc.Col(dcc.Graph(figure=plot_treemap(
+                data, title, colmap), id="treemap"), width=6)
         ])
     ])
+
 
 def get_multiverse_tab(data, factor_lists, kc_range, k_range, n_total_specs, colmap):
     return dbc.Row([
@@ -53,9 +59,11 @@ def get_multiverse_tab(data, factor_lists, kc_range, k_range, n_total_specs, col
         dbc.Col([
             get_filter_info_card(),
             get_spec_info_card(),
-            get_filter_card(data, factor_lists, kc_range, k_range, n_total_specs, colmap),
+            get_filter_card(data, factor_lists, kc_range,
+                            k_range, n_total_specs, colmap),
         ], width=3, className="sidebar")
     ])
+
 
 def get_other_tab(boot_data, specs, title, n_total_specs):
     return dbc.Col([
@@ -64,10 +72,13 @@ def get_other_tab(boot_data, specs, title, n_total_specs):
             dbc.Col(html.H2("p-Value Histogram"), width=3),
         ]),
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=plot_inferential(boot_data, title, n_total_specs), id="inferential"), width=9),
-            dbc.Col(dcc.Graph(figure=plot_p_hist(specs, title, n_total_specs), id="pValueHist"), width=3)
+            dbc.Col(dcc.Graph(figure=plot_inferential(
+                boot_data, title, n_total_specs), id="inferential"), width=9),
+            dbc.Col(dcc.Graph(figure=plot_p_hist(specs, title,
+                    n_total_specs), id="pValueHist"), width=3)
         ])
     ])
+
 
 def get_datatable(df, key_c_id):
     return dash_table.DataTable(
@@ -75,7 +86,7 @@ def get_datatable(df, key_c_id):
         columns=_get_datatable_formatting(df),
         page_action="none",
         sort_action="native",
-        #fixed_rows={'headers': True},
+        # fixed_rows={'headers': True},
         style_header={
             'backgroundColor': "dimgray",
             'color': 'white',
@@ -112,14 +123,16 @@ def get_datatable(df, key_c_id):
                 'if': {"filter_query": f"{{c_id}} eq '{c_id}'"},
                 'background-color': "lightgray"
             }
-        for c_id in df[df[key_c_id] % 2 != 0][key_c_id]]
+            for c_id in df[df[key_c_id] % 2 != 0][key_c_id]]
     )
+
 
 def _get_datatable_formatting(df):
     columns = []
     for col in df.columns:
         if df[col].dtype == "float64":
-            item = dict(id=col, name=col, type="numeric", format=dict(specifier=".4f"),  selectable=True)
+            item = dict(id=col, name=col, type="numeric",
+                        format=dict(specifier=".4f"),  selectable=True)
             columns.append(item)
         else:
             item = dict(id=col, name=col, selectable=True)
@@ -127,17 +140,20 @@ def _get_datatable_formatting(df):
 
     return columns
 
+
 def get_download_card(id):
     return dbc.Col([
         dbc.Card(dbc.CardBody(), className="card-header thin"),
         dbc.Card(dbc.CardBody(dbc.Row([
             dbc.Col([
                 dbc.InputGroup([dbc.InputGroupText("Width"),
-                    dbc.Col(dbc.Input(id=f"inImageWidth{id}", type="number", min=1, max=5000, step=1, value=1500, placeholder="e.g. '1000'"))
+                    dbc.Col(dbc.Input(id=f"inImageWidth{id}", type="number", min=1,
+                            max=5000, step=1, value=1500, placeholder="e.g. '1000'"))
                 ], style={"margin-top": 0, "margin-bottom": "5px"}),
                 dbc.InputGroup([dbc.InputGroupText("Height"),
-                    dbc.Col(dbc.Input(id=f"inImageHeight{id}", type="number", min=1, max=5000, step=1, value=1000, placeholder="e.g. '1000'"))
-                ], style={"margin-top": 0})
+                                dbc.Col(dbc.Input(
+                                    id=f"inImageHeight{id}", type="number", min=1, max=5000, step=1, value=1000, placeholder="e.g. '1000'"))
+                                ], style={"margin-top": 0})
             ], width=6),
             dbc.Col(dbc.Select(
                 id=f"inImageFiletype{id}",
@@ -149,7 +165,8 @@ def get_download_card(id):
                 ],
                 value="pdf",
             ), width=3, style={"margin-block": "inherit"}),
-            dbc.Col(dbc.Button(id=f"inDownload{id}", children=html.I(className="bi bi-download")), width=3, style={"text-align": "center"}),
+            dbc.Col(dbc.Button(id=f"inDownload{id}", children=html.I(
+                className="bi bi-download")), width=3, style={"text-align": "center"}),
             dcc.Download(id=f"outDownload{id}")
         ])), className="card-main")
     ])
@@ -166,6 +183,7 @@ def get_filter_info_card():
         ])), className="card-main")
     ])
 
+
 def get_spec_infos():
     spec_infos = [
         ("Effect Size: ", "es"),
@@ -177,18 +195,23 @@ def get_spec_infos():
         ("Studies: ", "st")
     ]
     return spec_infos
-    
+
+
 def get_spec_info_card():
     spec_infos = get_spec_infos()
     return dbc.Col([
-        dbc.Card(dbc.CardBody(html.H4(id="outSpecInfoSN", children="", className="card-title")), className="card-header"),
+        dbc.Card(dbc.CardBody(html.H4(id="outSpecInfoSN", children="",
+                 className="card-title")), className="card-header"),
         dbc.Card(dbc.CardBody([
             *[dbc.Row([
-                dbc.Col(dcc.Markdown(k, className="mdp"), width=3, style={"margin": "unset"}),
-                dbc.Col(dcc.Markdown(id=f"outSpecInfo{v}", children="-", className="mdp"), width=9)
-            ], className="spec-info-card-row") for (k,v) in spec_infos]
+                dbc.Col(dcc.Markdown(k, className="mdp"),
+                        width=3, style={"margin": "unset"}),
+                dbc.Col(dcc.Markdown(
+                    id=f"outSpecInfo{v}", children="-", className="mdp"), width=9)
+            ], className="spec-info-card-row") for (k, v) in spec_infos]
         ], className="spec-info"), className="card-main")
     ])
+
 
 def get_filter_card(data, factor_lists, kc_range, k_range, n_total_specs, colmap):
     return dbc.Col([
@@ -196,8 +219,10 @@ def get_filter_card(data, factor_lists, kc_range, k_range, n_total_specs, colmap
             dbc.Row([
                 dbc.Col(html.H4("Filters", className="card-title"), width=6),
                 dbc.Col(dbc.Row([
-                    dbc.Col(dbc.Button(id="inRefresh", children=html.I(className="bi bi-arrow-clockwise")), width=5, className="btn-col"),
-                    dbc.Col(dbc.Button(id="inReset", children=html.I(className="bi bi-trash")), width=5, className="btn-col"),
+                    dbc.Col(dbc.Button(id="inRefresh", children=html.I(
+                        className="bi bi-arrow-clockwise")), width=5, className="btn-col"),
+                    dbc.Col(dbc.Button(id="inReset", children=html.I(
+                        className="bi bi-trash")), width=5, className="btn-col"),
                 ], justify="start"), width=4)
             ], justify="between", className="filter-row")
         ), className="card-header"),
@@ -205,6 +230,7 @@ def get_filter_card(data, factor_lists, kc_range, k_range, n_total_specs, colmap
             get_filters(data, factor_lists, kc_range, k_range, n_total_specs, colmap), className="filters"
         ), className="card-main")
     ])
+
 
 def get_filters(data, factor_lists, kc_range, k_range, n_total_specs, colmap):
     kc_min, kc_max = kc_range
@@ -214,14 +240,14 @@ def get_filters(data, factor_lists, kc_range, k_range, n_total_specs, colmap):
     key_e_id = colmap["key_e_id"]
     return [
         dbc.InputGroup([dbc.InputGroupText("Spec. Nr."),
-            dbc.Input(
-                id="inSpecNr",
-                placeholder="Spec. Nr.",
-                type="number",
-                min=1,
-                max=n_total_specs,
-                value=None
-            ),         
+                        dbc.Input(
+            id="inSpecNr",
+            placeholder="Spec. Nr.",
+            type="number",
+            min=1,
+            max=n_total_specs,
+            value=None
+        ),
         ]),
         html.Hr(),
         dbc.Label("Confidence Intervals"),
@@ -278,7 +304,7 @@ def get_filters(data, factor_lists, kc_range, k_range, n_total_specs, colmap):
         html.Hr(),
         dbc.Label("# Clusters", html_for="inRangeKC"),
         dcc.RangeSlider(id="inRangeKC", min=kc_min, max=kc_max, step=1, value=[kc_min, kc_max],
-                            marks={**{i: str(i) for i in range(kc_min, kc_max+1, 2)}, kc_max: f"{kc_max}"}),
+                        marks={**{i: str(i) for i in range(kc_min, kc_max+1, 2)}, kc_max: f"{kc_max}"}),
         html.Hr(),
         dbc.Label("# Samples", html_for="inRangeK"),
         dcc.RangeSlider(id="inRangeK", min=k_min, max=k_max, step=1, value=[k_min, k_max],
@@ -298,7 +324,8 @@ def get_filters(data, factor_lists, kc_range, k_range, n_total_specs, colmap):
         dbc.Accordion([dbc.AccordionItem([
             dbc.Col([
                 dbc.Row([
-                    dbc.Col(dcc.Markdown(id={"type": "outFactor", "index": i}, children=k)),
+                    dbc.Col(dcc.Markdown(
+                        id={"type": "outFactor", "index": i}, children=k)),
                     dbc.Col(dbc.Select(
                         factor_lists[k],
                         None,
@@ -310,7 +337,8 @@ def get_filters(data, factor_lists, kc_range, k_range, n_total_specs, colmap):
         ], title="Factor Filters")], start_collapsed=True,),
         html.Hr(),
         dbc.Accordion([dbc.AccordionItem([
-            dbc.Button(children=html.I(className="bi bi-check2-all"), id="inToggleAll"),
+            dbc.Button(children=html.I(
+                className="bi bi-check2-all"), id="inToggleAll"),
             dbc.Checklist(
                 options=[{"label": c, "value": str(c_id)}
                          for c_id, c in [(c_id, data[data[key_c_id] == c_id][key_c].iloc[0]) for c_id in sorted(data[key_c_id].unique())]],
@@ -321,7 +349,8 @@ def get_filters(data, factor_lists, kc_range, k_range, n_total_specs, colmap):
         ], title="Study ID Filters")], start_collapsed=True,),
         html.Hr(),
         dbc.Accordion([dbc.AccordionItem([
-            dbc.Button(children=html.I(className="bi bi-check2-all"), id="inToggleAllES"),
+            dbc.Button(children=html.I(
+                className="bi bi-check2-all"), id="inToggleAllES"),
             dbc.Checklist(
                 options=[{"label": f"ES ID: {e_id}", "value": str(e_id)}
                          for e_id in sorted(data[key_e_id])],

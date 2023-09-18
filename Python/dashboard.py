@@ -11,6 +11,7 @@ from config import read_config
 from data import prepare_data
 from plotting import get_spec_fill_data, get_cluster_fill_data, get_colors, plot_multiverse
 
+
 def _get_empty_figure():
     fig = go.Figure()
     fig.add_annotation(
@@ -27,6 +28,7 @@ def _get_empty_figure():
         height=1000
     )
     return fig
+
 
 external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 app = Dash(__name__, external_stylesheets=external_stylesheets,
@@ -60,6 +62,7 @@ app.layout = dbc.Container([
     ])
 ], fluid=True)
 
+
 @app.callback(
     Output("outTabData", "children"),
     Output("outTabMultiverse", "children"),
@@ -89,6 +92,7 @@ def get_tab_content(memory):
     )
     return data_tab_content, multiverse_tab_content, other_tab_content
 
+
 @app.callback(
     Output("memory", "data"),
     Output("outHeaderTitle", "children"),
@@ -111,7 +115,7 @@ def upload(memory, filenames, contents):
 
         if f.startswith("config"):
             config = read_config(data=c_decoded_str)
-        
+
         if f.startswith("data"):
             data = prepare_data(config["colmap"], raw=c_decoded_str)
 
@@ -132,7 +136,7 @@ def upload(memory, filenames, contents):
     k_min = config["k_min"]
     k_max = max(specs["k"])
     k_range = [k_min, k_max]
-    
+
     kc_min = min(specs["kc"])
     kc_max = max(specs["kc"])
     kc_range = [kc_min, kc_max]
@@ -143,7 +147,7 @@ def upload(memory, filenames, contents):
     key_c_id = config["colmap"]["key_c_id"]
     key_c = config["colmap"]["key_c"]
     key_e_id = config["colmap"]["key_e_id"]
-    
+
     n_clusters = len(data[key_c_id].unique())
 
     level = config["level"]
@@ -192,6 +196,7 @@ def download_multiverse(figure_dict, width, height, filetype, _):
     fig_bytes = fig.to_image(format=filetype, height=height, width=width)
     return dcc.send_bytes(fig_bytes, f"multiverse.{filetype}")
 
+
 @app.callback(
     Output("outDownloadTM", "data"),
     State("treemap", "figure"),
@@ -208,6 +213,7 @@ def download_treemap(figure_dict, width, height, filetype, _):
         return dcc.send_file("treemap.html")
     fig_bytes = fig.to_image(format=filetype, height=height, width=width)
     return dcc.send_bytes(fig_bytes, f"treemap.{filetype}")
+
 
 @app.callback(
     Output("inRefresh", "n_clicks"),
@@ -236,7 +242,7 @@ def reset_filters(memory, p_options, ci_options, refresh_clicks, _):
     key_c_id = memory["key_c_id"]
     key_e_id = memory["key_e_id"]
     factor_lists = memory["factor_lists"]
-    
+
     for item in [*p_options, *ci_options]:
         item["disabled"] = True
     selects = [None for _ in factor_lists.keys()]
@@ -259,6 +265,7 @@ def reset_filters(memory, p_options, ci_options, refresh_clicks, _):
             p_filter_switch, p_marker_switch, p_value_options, p_value,
             kc_range, k_range, effect_sizes, study_checklist, es_checklist)
 
+
 @app.callback(
     Output("inPValues", "options"),
     State("inPValues", "options"),
@@ -271,6 +278,7 @@ def toggle_p_radio_items(options, p_marker_switch, p_filter_switch):
         item["disabled"] = disabled
     return options
 
+
 @app.callback(
     Output("inCICases", "options"),
     State("inCICases", "options"),
@@ -280,6 +288,7 @@ def toggle_ci_radio_items(options, value):
     for item in options:
         item["disabled"] = (value == [])
     return options
+
 
 @app.callback(
     Output("inStudyChecklist", "value"),
@@ -297,7 +306,8 @@ def select_deselect_c(memory, study_set, n_clicks):
         return []
     else:
         return [str(c_id) for c_id in data[key_c_id].unique()]
-    
+
+
 @app.callback(
     Output("inESChecklist", "value"),
     State("memory", "data"),
@@ -334,12 +344,12 @@ def display_click_data(memory, clickData):
 
     if clickData is None:
         return ("Specification Nr.: -", *(["-"] * len(get_spec_infos())))
-    
+
     points = clickData["points"][0]
-    cn = 5 if level==3 else 3
+    cn = 5 if level == 3 else 3
     if points["curveNumber"] == cn and points["customdata"] == "":
         return ("Specification Nr.: -", *(["-"] * len(get_spec_infos())))
-        
+
     spec_nr = points["x"]
     spec_data = specs[specs["rank"] == spec_nr]
     es = spec_data["mean"].item()
@@ -355,7 +365,8 @@ def display_click_data(memory, clickData):
     set_c_ids = np.array(set.split(",")).astype(int)
     set_e_ids = np.array(set_es.split(",")).astype(int)
     set_data = data[data[key_c_id].isin(set_c_ids)]
-    clusters = {cluster: [f"*{e_id}*" for e_id in group[key_e_id] if e_id in set_e_ids] for cluster, group in set_data.groupby(key_c)}
+    clusters = {cluster: [f"*{e_id}*" for e_id in group[key_e_id]
+                          if e_id in set_e_ids] for cluster, group in set_data.groupby(key_c)}
     cluster_infos = []
     for c, e_ids in clusters.items():
         c_id = np.where(np.array(cluster_fill_data["labels"]) == c)[0][0]
@@ -374,6 +385,7 @@ def display_click_data(memory, clickData):
         ("  \n").join(cluster_infos)
     ]
     return (f"Specification Nr.: {spec_nr}", *spec_info)
+
 
 @app.callback(
     Output("multiverse", "figure"),
@@ -419,10 +431,10 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
                 y_u_limit + (y_range_diff * 0.1)]
     y_ticks = np.arange(
         round(y_limits[0], 1),
-        round(y_limits[1], 1), 
+        round(y_limits[1], 1),
         round((y_limits[1] - y_limits[0]) / 5, 1)
     ).round(1)
-    
+
     specs_f = specs.copy()
     if ci_switch != []:
         if ci_case == 0:
@@ -448,8 +460,10 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
         else:
             specs_f = specs_f[specs_f["mean"] >= 0]
 
-    specs_f = specs_f[specs_f["set"].apply(lambda set: all(c_id in study_list for c_id in set.split(",")))]
-    specs_f = specs_f[specs_f["set_es"].apply(lambda set_es: all(e_id in es_list for e_id in set_es.split(",")))]
+    specs_f = specs_f[specs_f["set"].apply(lambda set: all(
+        c_id in study_list for c_id in set.split(",")))]
+    specs_f = specs_f[specs_f["set_es"].apply(
+        lambda set_es: all(e_id in es_list for e_id in set_es.split(",")))]
 
     factors = zip(factor_keys, factor_values)
 
@@ -477,7 +491,7 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
 
     if n_specs_f == 0:
         return _get_empty_figure(), sfp_info, sfpp_info, sfpesa_info, sfpesb_info
-    
+
     fig = plot_multiverse(
         specs_f,
         n_total_specs,
@@ -509,7 +523,7 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
                 y=specs_f[specs_f["p"] < p_value]["mean"],
                 marker=dict(color="blue", symbol="diamond", size=10),
                 mode="markers", hovertemplate="p-Value: %{customdata:.4f}<extra></extra>", customdata=customdata
-            ), row=1 if level==2 else 2, col=1
+            ), row=1 if level == 2 else 2, col=1
         )
 
     # if es_value != 0:
@@ -522,6 +536,7 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
     #     )
 
     return fig, sfp_info, sfpp_info, sfpesa_info, sfpesb_info
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
