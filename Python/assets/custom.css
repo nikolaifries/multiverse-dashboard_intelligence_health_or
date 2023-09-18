@@ -144,6 +144,9 @@ p {
 .accordion-body {
     padding: 5px;
 }
+.accordion-body > .col > .row {
+    margin-bottom: 5px;
+}
 
 hr {
     margin: 0.5rem 0;

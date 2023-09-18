@@ -99,7 +99,7 @@ def generate_specs(data, which_lists, how_lists, colmap, k_min, level,
     # Remove all specifications which were not used
     specs_full = specs.dropna(axis=0, how="any")
 
-    # Only keep unique study/sample subsets # TODO
+    # Only keep unique study/sample subsets
     specs_full = specs_full.drop_duplicates(
         subset=["mean", "set", *how_lists.keys()]
     )

@@ -8,13 +8,19 @@ In addition, the `Python` code offers an interactive Dashboard, created with `Pl
 
 ## Navigation
 
-The code is separated by language into the respective directories [`Python/`](Python/) and [`R/`](R/). Files with the same name contain equivalent methods with equivalent functionality (e.g. `Python/bootstrap.py` and `R/bootstrap.R`). Both directories contain a notebook (*Jupyter Notebook* [`Multiverse.ipynb`](Python/Multiverse.ipynb) and *R-Markdown Notebook* [`Multiverse.Rmd`](R/Multiverse.Rmd)) for interactive code execution. The notebooks guide you through the multiverse analysis steps. Alternatively, the user can use the scripts TODO. The `Plotly Dashboard` can be launched by executing the [`dashboard.py`](Python/dashboard.py) file, or from the notebook.
+The code is separated by language into the respective directories [`Python/`](Python/) and [`R/`](R/). Files with the same name contain equivalent methods with equivalent functionality (e.g. `Python/bootstrap.py` and `R/bootstrap.R`). Both directories contain a notebook (*Jupyter Notebook* [`Multiverse.ipynb`](Python/Multiverse.ipynb) and *R-Markdown Notebook* [`Multiverse.Rmd`](R/Multiverse.Rmd)) for interactive code execution. The notebooks guide you through the multiverse analysis steps. Alternatively, the user can use the scripts [`Multiverse.py`](Python/Multiverse.py) and [`Multiverse.R`](R/Multiverse.R). The `Plotly Dashboard` can be launched by executing the [`dashboard.py`](Python/dashboard.py) file, or from the notebook.
 
 ## Tutorial
 
 In order to conduct a multiverse analysis, the user must do two things:
+
+0) (Python only) install all necessary packages using the [`environment.yml`](TODO) file
 1) adapt the code accordingly, and
 2) provide a configuration file.
+
+### Python Installation
+
+TODO
 
 ### Code
 
