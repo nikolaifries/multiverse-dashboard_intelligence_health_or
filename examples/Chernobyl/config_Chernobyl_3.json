@@ -37,7 +37,7 @@
         "values": [
             ["z"],
             ["REML", "ML"],
-            ["t", "z"]
+            ["t-test", "z-test"]
         ],
         "values_labels": [
             ["z"],
