@@ -36,6 +36,22 @@ preprocessDataEDIT <- function(path, title) {
   return(data)
 }
 
+# Preprocessing for Chernobyl example (level 2).
+# preprocessData <- function(path, title) {
+#   load(file = path)
+#   data <- Chernobyl
+#   rm(Chernobyl)
+#   data$radiation[is.na(data$radiation)] <- "low"
+#   data$r <- tanh(data$z)
+#   data$se.r <- (1 - data$r^2) * data$se.z
+#   data$var.r <- data$se.r^2
+#   data$author <- sapply(seq_along(data), function(i) {
+#     paste(data[i, "author"], i, sep = "_")
+#   })
+#   saveData_(data, path, title)
+#   return(data)
+# }
+
 # Preprocessing for Chernobyl example (level 3).
 # preprocessData <- function(path, title) {
 #   load(file = path)
@@ -67,32 +83,32 @@ preprocessDataEDIT <- function(path, title) {
 # }
 
 # Preprocessing for Intelligence & Religion example (level 3).
-preprocessData <- function(path, title) {
-  data <- data.frame(read.spss(path))
-  data <- data[, c(
-    "StudyID", "correlation", "religiosityMeasure",
-    "sample", "publicationstatus", "N", "variance_r"
-  )]
-  data$StudyID <- gsub("^\\(\\d+\\)\\s*", "", data$StudyID)
-  data$sample <- as.character(data$sample)
-  data$sample[is.na(data$sample)] <- "Mixed"
-
-  data$religiosityMeasure <- as.character(data$religiosityMeasure)
-  data$publicationstatus <- as.character(data$publicationstatus)
-
-  data$r_se <- sqrt(data$variance_r)
-  data$z <- atanh(data$correlation)
-  data$z_se <- data$r_se / (1 - data$correlation^2)
-  saveData_(data, path, title)
-  return(data)
-}
-
-# Preprocessing for R2D:4D example (level 2).
 # preprocessData <- function(path, title) {
-#   data <- read.csv2(path, sep = ";", header = TRUE)
+#   data <- data.frame(read.spss(path))
+#   data <- data[, c(
+#     "StudyID", "correlation", "religiosityMeasure",
+#     "sample", "publicationstatus", "N", "variance_r"
+#   )]
+#   data$StudyID <- gsub("^\\(\\d+\\)\\s*", "", data$StudyID)
+#   data$sample <- as.character(data$sample)
+#   data$sample[is.na(data$sample)] <- "Mixed"
+#
+#   data$religiosityMeasure <- as.character(data$religiosityMeasure)
+#   data$publicationstatus <- as.character(data$publicationstatus)
+#
+#   data$r_se <- sqrt(data$variance_r)
+#   data$z <- atanh(data$correlation)
+#   data$z_se <- data$r_se / (1 - data$correlation^2)
 #   saveData_(data, path, title)
 #   return(data)
 # }
+
+# Preprocessing for R2D:4D example (level 2).
+preprocessData <- function(path, title) {
+  data <- read.csv2(path, sep = ";", header = TRUE)
+  saveData_(data, path, title)
+  return(data)
+}
 
 # Preprocessing for R2D:4D example (level 3).
 # preprocessData <- function(path, title) {

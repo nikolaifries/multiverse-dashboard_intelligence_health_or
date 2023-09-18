@@ -43,11 +43,30 @@ def preprocess_dataEDIT(path, title):
 
 
 # def preprocess_data(path, title):
+#     """Preprocessing for Chernobyl example (level 2)."""
+#     res = pyreadr.read_r(path)
+#     data = res["Chernobyl"]
+#     data.drop(columns=["es.id"], inplace=True)
+#     data["radiation"].fillna("low", inplace=True)
+#     data["r"] = np.tanh(data["z"])
+#     data["se.r"] = (1 - data["r"]**2) * data["se.z"]
+#     data["var.r"] = data["se.r"]**2
+#     data["author"] = data.apply(
+#         lambda row: f"{row['author']}_{row.name}", axis=1
+#     )
+#     _save_data(data, path, title)
+#     return data
+
+
+# def preprocess_data(path, title):
 #     """Preprocessing for Chernobyl example (level 3)."""
 #     res = pyreadr.read_r(path)
 #     data = res["Chernobyl"]
 #     data.drop(columns=["es.id"], inplace=True)
 #     data["radiation"].fillna("low", inplace=True)
+#     data["r"] = np.tanh(data["z"])
+#     data["se.r"] = (1 - data["r"]**2) * data["se.z"]
+#     data["var.r"] = data["se.r"]**2
 #     _save_data(data, path, title)
 #     return data
 
@@ -66,30 +85,30 @@ def preprocess_dataEDIT(path, title):
 #     return data
 
 
-def preprocess_data(path, title):
-    """Preprocessing for Intelligence & Religion example (level 3)."""
-    data = pd.read_spss(path)
-    data = data[["StudyID", "correlation", "religiosityMeasure",
-                "sample", "publicationstatus", "N", "variance_r"]]
-    data["StudyID"] = data["StudyID"].apply(
-        lambda x: re.sub(r'^\(\d+\)\s*', '', x))
-    data["sample"] = data["sample"].cat.add_categories("Mixed")
-    data["sample"].fillna("Mixed", inplace=True)
-    data["r_se"] = np.sqrt(data["variance_r"])
-    data["z"] = np.arctanh(data["correlation"])
-    data["z_se"] = data["r_se"] / (1 - data["correlation"]**2)
-    data["z_var"] = data["z_se"]**2
-    _save_data(data, path, title)
-    return data
-
-
 # def preprocess_data(path, title):
-#     """Preprocessing for R2D:4D example (level 2)."""
-#     data = pd.read_csv(path, sep=";", header=0, encoding="ISO-8859-1")
-#     for col in ["r", "r_se", "z", "z_se"]:
-#         data[col] = data[col].str.replace(',', '.').astype(float)
+#     """Preprocessing for Intelligence & Religion example (level 3)."""
+#     data = pd.read_spss(path)
+#     data = data[["StudyID", "correlation", "religiosityMeasure",
+#                 "sample", "publicationstatus", "N", "variance_r"]]
+#     data["StudyID"] = data["StudyID"].apply(
+#         lambda x: re.sub(r'^\(\d+\)\s*', '', x))
+#     data["sample"] = data["sample"].cat.add_categories("Mixed")
+#     data["sample"].fillna("Mixed", inplace=True)
+#     data["r_se"] = np.sqrt(data["variance_r"])
+#     data["z"] = np.arctanh(data["correlation"])
+#     data["z_se"] = data["r_se"] / (1 - data["correlation"]**2)
+#     data["z_var"] = data["z_se"]**2
 #     _save_data(data, path, title)
 #     return data
+
+
+def preprocess_data(path, title):
+    """Preprocessing for R2D:4D example (level 2)."""
+    data = pd.read_csv(path, sep=";", header=0, encoding="ISO-8859-1")
+    for col in ["r", "r_se", "z", "z_se"]:
+        data[col] = data[col].str.replace(',', '.').astype(float)
+    _save_data(data, path, title)
+    return data
 
 
 # def preprocess_data(path, title):

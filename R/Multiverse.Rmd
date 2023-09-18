@@ -1,6 +1,8 @@
 ---
 title: "Multiverse Meta-Analysis"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 This notebook contains all code required for **Multiverse Meta-Analyses**, including the generation of specifications, bootstrap data, and visualizations.
@@ -25,16 +27,16 @@ source("user_data.R", local = knitr::knit_global())
 In this cell, set the **title**, the **working directory** and the **path to the dataset** for this analysis. The **config**, **preprocessed data**, **specs**, and **bootstrap data** paths depend on the working directory and the title. This naming convention can be changed, but the prefixes (i.e. `boot`, `config`, `data` and `specs`) are required for the **Dashboard** to work. The configuration file must exist, all other data can either be loaded or generated, using the boolean flags. The generated data will be stored at the specified paths, or loaded from that path.
 
 ```{r}
-TITLE <- "IandR_2"
-DIR <- "../data/IandR-Meta-Analysis"
-DATA_PATH <- paste0(DIR, "/IandR.sav")
+TITLE <- "R2D4D_2"
+DIR <- "../examples/R2D4D"
+DATA_PATH <- paste0(DIR, "/R2D4D.csv")
 
-# TITLE <- "Chernobyl"
-# DIR <- "../data/Chernobyl-Meta-Analysis"
+# TITLE <- "Chernobyl_3"
+# DIR <- "../examples/Chernobyl"
 # DATA_PATH <- paste0(DIR, "/Chernobyl.rda")
 
 # TITLE = "IandR_2"
-# DIR = "../data/IandR-Meta-Analysis"
+# DIR = "../examples/IandR"
 # DATA_PATH = paste0(DIR, "/iandr.sav")
 
 PREPROCESS_DATA <- T # Load (False) or preprocess data (True)
@@ -53,35 +55,37 @@ In this cell, the configuration file is processed. The cell prints out the parse
 
 ```{r}
 config <- readConfig(CONFIG_PATH)
-c_info <- NULL
-c_info <- c(c_info, paste(config$title, "- Level", config$level, "Meta-Analysis"))
-c_info <- c(c_info, paste("  ", "Minimum Nr. of Samples to include Specification:", config$k_min))
-c_info <- c(c_info, paste("  ", "Bootstrap Iterations:", config$n_boot_iter))
-c_info <- c(c_info, paste("  ", config$n_which, "Which-Factors:"))
-n_which_combos <- 1
-for (which_f in names(config$which_lists)) {
-  values <- config$which_lists[[which_f]]
-  values_str <- paste(values, collapse = ", ")
-  n_which_combos <- n_which_combos * length(values)
-  c_info <- c(c_info, paste("    ", which_f, ":", values_str))
-}
-c_info <- c(c_info, paste("  (", n_which_combos, "Which-Factor Combinations )"))
-c_info <- c(c_info, paste("  ", config$n_how, "How-Factors:"))
-for (how_f in names(config$how_lists)) {
-  values <- config$how_lists[[how_f]]
-  values_str <- paste(values, collapse = ", ")
-  c_info <- c(c_info, paste("    ", how_f, ":", values_str))
-}
-c_info <- c(c_info, paste("  ", "Labels"))
-for (label in config$labels) {
-  c_info <- c(c_info, paste("    ", label))
-}
-c_info <- c(c_info, paste("  ", "Column-Map"))
-for (key in names(config$colmap)) {
-  c_info <- c(c_info, paste("    ", key, ":", config$colmap[[key]]))
-}
+if (!is.null(config)) {
+  c_info <- NULL
+  c_info <- c(c_info, paste(config$title, "- Level", config$level, "Meta-Analysis"))
+  c_info <- c(c_info, paste("  ", "Minimum Nr. of Samples to include Specification:", config$k_min))
+  c_info <- c(c_info, paste("  ", "Bootstrap Iterations:", config$n_boot_iter))
+  c_info <- c(c_info, paste("  ", config$n_which, "Which-Factors:"))
+  n_which_combos <- 1
+  for (which_f in names(config$which_lists)) {
+    values <- config$which_lists[[which_f]]
+    values_str <- paste(values, collapse = ", ")
+    n_which_combos <- n_which_combos * length(values)
+    c_info <- c(c_info, paste("    ", which_f, ":", values_str))
+  }
+  c_info <- c(c_info, paste("  (", n_which_combos, "Which-Factor Combinations )"))
+  c_info <- c(c_info, paste("  ", config$n_how, "How-Factors:"))
+  for (how_f in names(config$how_lists)) {
+    values <- config$how_lists[[how_f]]
+    values_str <- paste(values, collapse = ", ")
+    c_info <- c(c_info, paste("    ", how_f, ":", values_str))
+  }
+  c_info <- c(c_info, paste("  ", "Labels"))
+  for (label in config$labels) {
+    c_info <- c(c_info, paste("    ", label))
+  }
+  c_info <- c(c_info, paste("  ", "Column-Map"))
+  for (key in names(config$colmap)) {
+    c_info <- c(c_info, paste("    ", key, ":", config$colmap[[key]]))
+  }
 
-cat(c_info, sep = "\n")
+  cat(c_info, sep = "\n")
+}
 ```
 
 ## Preprocess and Prepare Data
@@ -192,20 +196,6 @@ fig_p_hist <- plotPValuesHist(specs, title)
 fig_p_hist
 ```
 
-### Rainforest
-
-```{r}
-fig_rainforest <- plotScaRainforest(data, colmap, title)
-fig_rainforest
-```
-
-### Gosh
-
-```{r}
-fig_gosh <- plotGosh(data, colmap, title)
-fig_gosh
-```
-
 ### Multiverse
 
 ```{r}
@@ -216,47 +206,55 @@ fig_multiverse <- plotMultiverse(
 )
 fig_multiverse
 
-ggsave("multiverse.pdf", fig_multiverse, width = 16 * 1.2, height = 50 * 1.2, dpi = 600, units = "cm")
+# ggsave("multiverse.pdf", fig_multiverse, width = 16 * 1.2, height = 50 * 1.2, dpi = 600, units = "cm")
 ```
 
 ### Individual Multiverse Components
 
 ```{r}
-fig_caterpillar <- plotCaterpillar(
-  specs, n_total_specs, colors, k_range,
-  title, x_range, fill_levels
-)
+fig_caterpillar <- plotCaterpillar(specs, colors, title, x_range, fill_levels)
 fig_caterpillar
 ```
 
 ```{r}
 fig_cluster_tiles <- plotClusterTiles(
-  specs, cluster_fill_data, n_total_specs,
-  title, x_range
+  specs, cluster_fill_data, n_total_specs, title, x_range
 )
 fig_cluster_tiles
 ```
 
 ```{r}
 fig_cluster_size <- plotClusterSize(
-  specs, k_range, n_total_specs,
-  title, x_range
+  specs, k_range, n_total_specs, title, x_range
 )
 fig_cluster_size
 ```
 
 ```{r}
 fig_sample_size <- plotSampleSize(
-  specs, k_range, n_total_specs,
-  title, x_range
+  specs, k_range, n_total_specs, title, x_range
 )
 fig_sample_size
 ```
 
 ```{r}
 fig_spec_tiles <- plotSpecTiles(
-  specs, n_total_specs, spec_fill_data,
-  labels, colors, k_range, title, x_range, fill_levels
+  specs, n_total_specs, spec_fill_data, labels, colors, title, x_range,
+  fill_levels
 )
 fig_spec_tiles
+```
+
+### Rainforest
+
+```{r}
+# fig_rainforest <- plotRainforest(data, colmap, title)
+# fig_rainforest
+```
+
+### Gosh
+
+```{r}
+# fig_gosh <- plotGosh(data, colmap, title)
+# fig_gosh
 ```
