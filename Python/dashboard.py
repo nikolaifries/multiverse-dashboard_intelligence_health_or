@@ -369,8 +369,8 @@ def display_click_data(memory, clickData):
                           if e_id in set_e_ids] for cluster, group in set_data.groupby(key_c)}
     cluster_infos = []
     for c, e_ids in clusters.items():
-        c_id = np.where(np.array(cluster_fill_data["labels"]) == c)[0][0]
-        c_fill = cluster_fill_data[f"{spec_nr}"][c_id]
+        c_index = np.where(np.array(cluster_fill_data["labels"]) == c)[0][0]
+        c_fill = cluster_fill_data[f"{spec_nr}"][-(c_index+1)]
         str_e_ids = (", ").join(e_ids)
         info = f"**{c}**, Effect ID{'s' if len(e_ids) > 1 else ''}: {str_e_ids}, {c_fill:.2f}%"
         cluster_infos.append(info)
@@ -444,32 +444,41 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
         elif ci_case == 2:
             specs_f = specs_f[(specs_f["ub"] > 0) & (specs_f["lb"] < 0)]
 
-    specs_f = specs_f[specs_f["kc"] >= range_kc[0]]
-    specs_f = specs_f[specs_f["kc"] <= range_kc[1]]
+    if len(specs_f) != 0:
+        specs_f = specs_f[specs_f["kc"] >= range_kc[0]]
+    if len(specs_f) != 0:
+        specs_f = specs_f[specs_f["kc"] <= range_kc[1]]
 
-    specs_f = specs_f[specs_f["k"] >= range_k[0]]
-    specs_f = specs_f[specs_f["k"] <= range_k[1]]
+    if len(specs_f) != 0:
+        specs_f = specs_f[specs_f["k"] >= range_k[0]]
+    if len(specs_f) != 0:
+        specs_f = specs_f[specs_f["k"] <= range_k[1]]
 
     if p_filter_switch != []:
-        specs_f = specs_f[specs_f["p"] < p_value]
+        if len(specs_f) != 0:
+            specs_f = specs_f[specs_f["p"] < p_value]
 
     if es_value != 0:
         # cutoff_rank = specs_f[specs_f["mean"] >= 0].iloc[0]["rank"]
-        if es_value < 0:
-            specs_f = specs_f[specs_f["mean"] < 0]
-        else:
-            specs_f = specs_f[specs_f["mean"] >= 0]
+        if len(specs_f) != 0:
+            if es_value < 0:
+                specs_f = specs_f[specs_f["mean"] < 0]
+            else:
+                specs_f = specs_f[specs_f["mean"] >= 0]
 
-    specs_f = specs_f[specs_f["set"].apply(lambda set: all(
-        c_id in study_list for c_id in set.split(",")))]
-    specs_f = specs_f[specs_f["set_es"].apply(
-        lambda set_es: all(e_id in es_list for e_id in set_es.split(",")))]
+    if len(specs_f) != 0:
+        specs_f = specs_f[specs_f["set"].apply(lambda set: all(
+            c_id in study_list for c_id in set.split(",")))]
+    if len(specs_f) != 0:
+        specs_f = specs_f[specs_f["set_es"].apply(
+            lambda set_es: all(e_id in es_list for e_id in set_es.split(",")))]
 
     factors = zip(factor_keys, factor_values)
 
     for f_key, f_val in factors:
         if f_val is not None:
-            specs_f = specs_f[specs_f[f_key] == f_val]
+            if len(specs_f) != 0:
+                specs_f = specs_f[specs_f[f_key] == f_val]
 
     n_specs_f = len(specs_f)
     sfp = n_specs_f * 100 / n_total_specs
@@ -539,4 +548,4 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server()

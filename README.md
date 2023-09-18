@@ -14,13 +14,17 @@ The code is separated by language into the respective directories [`Python/`](Py
 
 In order to conduct a multiverse analysis, the user must do two things:
 
-0) (Python only) install all necessary packages using the [`environment.yml`](TODO) file
+0) (Python only) install all necessary packages using the [`environment.yml`](environment.yml) file
 1) adapt the code accordingly, and
 2) provide a configuration file.
 
 ### Python Installation
 
-TODO
+With [`conda`](https://docs.conda.io/projects/miniconda/en/latest/), create a virtual environment using the environment file [`environment.yml`](environment.yml). Then, activate the new environment called *multiverse*. This can be done with the commands:
+```
+conda env create -f environment.yml
+conda activate multiverse
+```
 
 ### Code
 
@@ -137,7 +141,7 @@ For the **R2D4D** example, we provide HTML exports of the `R` and `Python` noteb
 
 The `Plotly Dashboard` can be used by executing the [`dashboard.py`](Python/dashboard.py) file. The directory [`assets/`](Python/assets/) contains a `.css` file for styling. Typically, the dashboard will be accessible via localhost, port 8050, i.e. http://127.0.0.1:8050/. The dashboard requires an "upload" (they are loaded into web storage, and will be removed once the browser is closed) of the configuration file, the preprocessed data, the specification data and the bootstrap data. Each respective filename must be prefixed with `config`, `data`, `specs` and `boot` respectively. The notebooks and scripts adhere to this naming convention.
 
-For a short video walkthrough of the dashboard, go [here](https://youtube.com). TODO
+For a short video walkthrough of the dashboard, go [here](https://www.youtube.com/watch?v=6e5WdoKl5D4).
 
 ## Issues and Contributions
 
