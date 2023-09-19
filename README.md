@@ -38,7 +38,7 @@ Each part of the code that must/can be adapted is marked with a comment `# === U
 
 ### Configuration File
 
-The user must provide a JSON configuration file that tailors the multiverse analysis. We provide a skeleton configuration in [`config_skeleton.json`](config_skeleton.json), as well as full configuration files for each example (see [Examples](#examples)). Each field in the JSON file is required.
+The user must provide a JSON configuration file that tailors the multiverse analysis. We provide a skeleton configuration in [`config_skeleton.json`](config_skeleton.json), as well as full configuration files for each example (see [Examples](#examples)). Each field in the JSON file is required (with the exception of some subfields in the column map, see below).
 
 We will use the file [`config_R2D4D.json`](examples/R2D4D/config_R2D4D_2.json) from the *R2D4D* example, to explain each field.
 
@@ -57,6 +57,15 @@ First, some important configuration values:
 ```
 
 Next, the column map. It maps specific column names from the meta-analytic dataset to data-agnostic values. It also specifies the column name, under which cluster (study) and effect (individual effect sizes) IDs are stored in the data. These IDs should be numeric. If they don't exist, they will be created under the specified name.
+
+The `key_main_es` and `key_main_es_se` entries are only required for plotting a Treemap. If that is not needed, they can be omitted.
+
+While the [skeleton configuration file](config_skeleton.json) contains fields for the effect size metrics `z`, `r`, and `d` (including standard deviations and variances, with the suffixes `_se` and `_var`), it is important to note the following: **Not all effect size mappings**, such as `key_z`, `key_r_se`, or `key_d_var` must be specified in the configuration file. You only have to specify those effect sizes, standard errors and variances that you **need in your particular meta-analytic methods** (i.e. in your how-factors). To clarify, two examples:
+
+- If the how-factors contain using the metrics `z` and `r`, it is not necessary to specify `key_d`, `key_d_se`, or `key_d_var`.
+- For 3-level analyses, all meta-analytic methods (`rma.mv()`) operate on variances, as opposed to standard deviations. Therefore, none of `key_z_se`, `key_r_se`, or `key_d_se` have to be specified. 
+
+In summary, which effect sizes / standard errors / variances are specified in the column map depends on the meta-analytic methods used. The only important thing is that the methods in `user_fit.py` are adapted in tandem.
 
 ```
     ...
@@ -149,7 +158,7 @@ In case of issues, feel free to contact [`dominik.vesely7@gmail.com`](mailto:dom
 
 ## License and Credit
 
-See the [LICENSE](LICENSE.md) file for license rights and limitations. If you use this code in your work, please cite [Voracek et al. (2019)](https://doi.org/10.1027/2151-2604/a000357) with the citation below, and refer to this repository (e.g. with a URL in a footnote).
+See the [LICENSE](LICENSE.md) file for license rights and limitations. If you use this code in your work, please cite it using GitHub's citation feature. Consider also citing [Voracek et al. (2019)](https://doi.org/10.1027/2151-2604/a000357) with the citation below.
 
 ```
 @article{voracek2019,
