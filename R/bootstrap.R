@@ -24,34 +24,14 @@ generateBootData <- function(specs, n_iter, data, colmap, level, save_path) {
   n_specs <- nrow(specs)
   res <- matrix(numeric(n_iter * n_specs), ncol = n_iter)
 
-  # Get relevant keys from colmap
-  key_z <- colmap$key_z
-  key_z_se <- colmap$key_z_se
-  key_r <- colmap$key_r
-  key_r_se <- colmap$key_r_se
-  key_n <- colmap$key_n
-
   # Sample n_iter times under null hypothesis
   for (col in 1:n_iter) {
-    # Draw randomly new effect size and compute standard error
-    z_se <- 1 / sqrt(data[[key_n]] - 3)
-    data[[key_z]] <- rnorm(nrow(data), mean = 0, sd = z_se)
-    data[[key_z_se]] <- z_se
-    data[[key_r]] <- tanh(data[[key_z]])
-    data[[key_r_se]] <- (1 - data[[key_r]]^2) * z_se
-
     # Compute summary effects for all effect ID sets according to how-factors
     # using bootstrapped data
     if (level == 2) {
-      boot_effects <- lapply(
-        effect_sets,
-        FUN = function(x) specListLvl2(x, data, colmap)
-      )
+      boot_effects <- specListLvl2(effect_sets, data, colmap)
     } else if (level == 3) {
-      boot_effects <- lapply(
-        effect_sets,
-        FUN = function(x) specListLvl3(x, data, colmap)
-      )
+      boot_effects <- specListLvl3(effect_sets, data, colmap)
     }
     boot_effects <- sort(unlist(boot_effects))
 

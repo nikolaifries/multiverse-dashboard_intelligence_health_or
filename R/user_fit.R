@@ -26,55 +26,70 @@ library(metafor)
 #  Returns:
 #      List of computed summary effects.
 #
-specListLvl2 <- function(e_ids, data, colmap) {
+specListLvl2 <- function(effect_sets, data, colmap) {
+  boot_effects <- list()
+  key_e_id <- colmap$key_e_id
+
   # === USER EDIT HERE ===
-  # === Get the desired effect sizes from the data
-  # Get relevant keys from colmap
+  # === Get relevant keys from colmap
   key_z <- colmap$key_z
   key_z_se <- colmap$key_z_se
   key_r <- colmap$key_r
   key_r_se <- colmap$key_r_se
-  key_e_id <- colmap$key_e_id
-
-  # Get data for included effects
-  temp <- data[data[[key_e_id]] %in% e_ids, ]
-  yi_z <- temp[[key_z]]
-  sei_z <- temp[[key_z_se]]
-  yi_r <- temp[[key_r]]
-  sei_r <- temp[[key_r_se]]
+  key_n <- colmap$key_n
 
   # === USER EDIT HERE ===
-  # === Rewrite list of meta-analytic models to compute as desired
-  # Compute summary effects for each how-factor value combination
-  ctrl <- list(stepadj = 0.5, maxiter = 2000)
-  w <- 1 / nrow(temp)
-  fits <- list(
-    rma(yi = yi_z, sei = sei_z, method = "FE", data = temp),
-    rma(yi = yi_z, sei = sei_z, method = "DL", data = temp),
-    rma(yi = yi_z, sei = sei_z, method = "REML", control = ctrl, data = temp),
-    rma(yi = yi_z, sei = sei_z, method = "FE", weights = w, data = temp),
-    rma(yi = yi_r, sei = sei_r, method = "FE", data = temp),
-    rma(yi = yi_r, sei = sei_r, method = "DL", data = temp),
-    rma(yi = yi_r, sei = sei_r, method = "REML", control = ctrl, data = temp),
-    rma(yi = yi_r, sei = sei_r, method = "FE", weights = w, data = temp)
-  )
+  # === Draw randomly new effect size and compute standard error
+  z_se <- 1 / sqrt(data[[key_n]] - 3)
+  data[[key_z]] <- rnorm(nrow(data), mean = 0, sd = z_se)
+  data[[key_z_se]] <- z_se
+  data[[key_r]] <- tanh(data[[key_z]])
+  data[[key_r_se]] <- (1 - data[[key_r]]^2) * z_se
 
-  # Save summary effects in list
-  spec <- NULL
-  for (i in seq_along(fits)) {
-    fit <- fits[[i]]
-    b <- fit$b[[1]]
+  for (e_ids in effect_sets) {
     # === USER EDIT HERE ===
-    # === Edit this if-clause, depending on which models use a z effect size
-    # Transform z to r
-    if (i <= 3) {
-      spec <- c(spec, tanh(b))
-    } else {
-      spec <- c(spec, b)
+    # === Get the desired effect sizes from the data
+    temp <- data[data[[key_e_id]] %in% e_ids, ]
+    yi_z <- temp[[key_z]]
+    sei_z <- temp[[key_z_se]]
+    yi_r <- temp[[key_r]]
+    sei_r <- temp[[key_r_se]]
+
+    # === USER EDIT HERE ===
+    # === Rewrite list of meta-analytic models to compute as desired
+    # Compute summary effects for each how-factor value combination
+    ctrl <- list(stepadj = 0.5, maxiter = 2000)
+    w <- 1 / nrow(temp)
+    fits <- list(
+      rma(yi = yi_z, sei = sei_z, method = "FE", data = temp),
+      rma(yi = yi_z, sei = sei_z, method = "DL", data = temp),
+      rma(yi = yi_z, sei = sei_z, method = "REML", control = ctrl, data = temp),
+      rma(yi = yi_z, sei = sei_z, method = "FE", weights = w, data = temp),
+      rma(yi = yi_r, sei = sei_r, method = "FE", data = temp),
+      rma(yi = yi_r, sei = sei_r, method = "DL", data = temp),
+      rma(yi = yi_r, sei = sei_r, method = "REML", control = ctrl, data = temp),
+      rma(yi = yi_r, sei = sei_r, method = "FE", weights = w, data = temp)
+    )
+
+    # Save summary effects in list
+    spec <- NULL
+    for (i in seq_along(fits)) {
+      fit <- fits[[i]]
+      b <- fit$b[[1]]
+      # === USER EDIT HERE ===
+      # === Edit this if-clause, depending on which models use a z effect size
+      # Transform z to r
+      if (i <= 3) {
+        spec <- c(spec, tanh(b))
+      } else {
+        spec <- c(spec, b)
+      }
     }
+
+    boot_effects <- append(boot_effects, spec)
   }
 
-  return(spec)
+  return(boot_effects)
 }
 
 
@@ -107,6 +122,11 @@ fitModelLvl2 <- function(how_values, data, colmap) {
     key_z_se <- colmap$key_z_se
     yi <- data[[key_z]]
     sei <- data[[key_z_se]]
+  } else if (effect == "d") {
+    key_d <- colmap$key_d
+    key_d_se <- colmap$key_d_se
+    yi <- data[[key_d]]
+    sei <- data[[key_d_se]]
   }
 
   # === USER EDIT HERE ===
@@ -153,67 +173,82 @@ fitModelLvl2 <- function(how_values, data, colmap) {
 #  Returns:
 #      List of computed summary effects.
 #
-specListLvl3 <- function(e_ids, data, colmap) {
+specListLvl3 <- function(effect_sets, data, colmap) {
+  boot_effects <- list()
+  key_c_id <- colmap$key_c_id
+  key_e_id <- colmap$key_e_id
+
   # === USER EDIT HERE ===
-  # === Get the desired effect sizes from the data
-  # Get relevant keys from colmap
+  # === Get relevant keys from colmap
   key_z <- colmap$key_z
   key_z_var <- colmap$key_z_var
   key_r <- colmap$key_r
   key_r_var <- colmap$key_r_var
-  key_c_id <- colmap$key_c_id
-  key_e_id <- colmap$key_e_id
-
-  # Get data for included effects
-  temp <- data[data[[key_e_id]] %in% e_ids, ]
-  yi_z <- temp[[key_z]]
-  V_z <- temp[[key_z_var]]
-  yi_r <- temp[[key_r]]
-  V_r <- temp[[key_r_var]]
-
-  # Prepare 3-level dependency formula
-  formula_string <- paste("~ 1 | ", key_c_id, "/", key_e_id)
-  formula <- as.formula(formula_string)
+  key_n <- colmap$key_n
 
   # === USER EDIT HERE ===
-  # === Rewrite list of meta-analytic models to compute as desired
-  # Compute summary effects for each how-factor value combination
-  ctrl <- list(iter.max = 1000, rel.tol = 1e-8)
-  fits <- list(
-    rma.mv(
-      data = temp, yi = yi_z, V = V_z,
-      method = "REML", test = "t", random = formula, control = ctrl
-    ),
-    rma.mv(
-      data = temp, yi = yi_z, V = V_z,
-      method = "ML", test = "t", random = formula, control = ctrl
-    ),
-    rma.mv(
-      data = temp, yi = yi_z, V = V_z,
-      method = "REML", test = "z", random = formula, control = ctrl
-    ),
-    rma.mv(
-      data = temp, yi = yi_z, V = V_z,
-      method = "ML", test = "z", random = formula, control = ctrl
-    )
-  )
+  # === Draw randomly new effect size and compute variance
+  z_se <- 1 / sqrt(data[[key_n]] - 3)
+  data[[key_z]] <- rnorm(nrow(data), mean = 0, sd = z_se)
+  data[[key_z_var]] <- (z_se)^2
+  data[[key_r]] <- tanh(data[[key_z]])
+  data[[key_r_var]] <- ((1 - data[[key_r]]^2) * z_se)^2
 
-  # Save summary effects in list
-  spec <- NULL
-  for (i in seq_along(fits)) {
-    fit <- fits[[i]]
-    b <- fit$b[[1]]
+  for (e_ids in effect_sets) {
     # === USER EDIT HERE ===
-    # === Edit this if-clause, depending on which models use a z effect size
-    # Transform z to r
-    if (i <= 3) {
-      spec <- c(spec, tanh(b))
-    } else {
-      spec <- c(spec, b)
+    # === Get the desired effect sizes from the data
+    temp <- data[data[[key_e_id]] %in% e_ids, ]
+    yi_z <- temp[[key_z]]
+    V_z <- temp[[key_z_var]]
+    yi_r <- temp[[key_r]]
+    V_r <- temp[[key_r_var]]
+
+    # Prepare 3-level dependency formula
+    formula_string <- paste("~ 1 | ", key_c_id, "/", key_e_id)
+    formula <- as.formula(formula_string)
+
+    # === USER EDIT HERE ===
+    # === Rewrite list of meta-analytic models to compute as desired
+    # Compute summary effects for each how-factor value combination
+    ctrl <- list(iter.max = 1000, rel.tol = 1e-8)
+    fits <- list(
+      rma.mv(
+        data = temp, yi = yi_z, V = V_z,
+        method = "REML", test = "t", random = formula, control = ctrl
+      ),
+      rma.mv(
+        data = temp, yi = yi_z, V = V_z,
+        method = "ML", test = "t", random = formula, control = ctrl
+      ),
+      rma.mv(
+        data = temp, yi = yi_z, V = V_z,
+        method = "REML", test = "z", random = formula, control = ctrl
+      ),
+      rma.mv(
+        data = temp, yi = yi_z, V = V_z,
+        method = "ML", test = "z", random = formula, control = ctrl
+      )
+    )
+
+    # Save summary effects in list
+    spec <- NULL
+    for (i in seq_along(fits)) {
+      fit <- fits[[i]]
+      b <- fit$b[[1]]
+      # === USER EDIT HERE ===
+      # === Edit this if-clause, depending on which models use a z effect size
+      # Transform z to r
+      if (i <= 3) {
+        spec <- c(spec, tanh(b))
+      } else {
+        spec <- c(spec, b)
+      }
     }
+
+    boot_effects <- append(boot_effects, spec)
   }
 
-  return(spec)
+  return(boot_effects)
 }
 
 
@@ -247,6 +282,11 @@ fitModelLvl3 <- function(how_values, data, colmap) {
     key_z_var <- colmap$key_z_var
     yi <- data[[key_z]]
     V <- data[[key_z_var]]
+  } else if (effect == "d") {
+    key_d <- colmap$key_d
+    key_d_var <- colmap$key_d_var
+    yi <- data[[key_d]]
+    V <- data[[key_d_var]]
   }
 
   # Prepare 3-level dependency formula

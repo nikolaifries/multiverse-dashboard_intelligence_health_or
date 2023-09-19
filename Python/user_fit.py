@@ -26,7 +26,7 @@ pandas2ri.activate()
 # === according to the desired level (2 or 3).
 
 
-def spec_list_lvl_2(e_ids, data, colmap):
+def spec_list_lvl_2(effect_sets, data, colmap):
     """Compute 2-level summary effects for each how-factor value combination.
 
     Arguments:
@@ -37,52 +37,66 @@ def spec_list_lvl_2(e_ids, data, colmap):
     Returns:
         List of computed summary effects.
     """
+    boot_effects = []
+    key_e_id = colmap["key_e_id"]
+
     # === USER EDIT HERE ===
-    # === Get the desired effect sizes from the data
-    # Get relevant keys from colmap
+    # === Get relevant keys from colmap
     key_z = colmap["key_z"]
     key_z_se = colmap["key_z_se"]
     key_r = colmap["key_r"]
     key_r_se = colmap["key_r_se"]
-    key_e_id = colmap["key_e_id"]
-
-    # Get data for included effects
-    temp = data[data[key_e_id].isin(e_ids)]
-    z = temp[key_z]
-    z_se = temp[key_z_se]
-    r = temp[key_r]
-    r_se = temp[key_r_se]
+    key_n = colmap["key_n"]
 
     # === USER EDIT HERE ===
-    # === Rewrite list of meta-analytic models to compute as desired
-    # Compute summary effects for each how-factor value combination
-    ctrl = ListVector(dict(stepadj=0.5, maxiter=2000))
-    w = 1/len(temp)
-    fits = [
-        metafor.rma(yi=z, sei=z_se, method="FE"),
-        metafor.rma(yi=z, sei=z_se, method="DL"),
-        metafor.rma(yi=z, sei=z_se, method="REML", control=ctrl),
-        metafor.rma(yi=z, sei=z_se, method="FE", weights=w),
-        metafor.rma(yi=r, sei=r_se, method="FE"),
-        metafor.rma(yi=r, sei=r_se, method="DL"),
-        metafor.rma(yi=r, sei=r_se, method="REML", control=ctrl),
-        metafor.rma(yi=r, sei=r_se, method="FE", weights=w)
-    ]
+    # === Draw randomly new effect size and compute standard error
+    z_se = 1 / np.sqrt(data[key_n])
+    data[key_z] = np.random.normal(0, z_se, len(data))
+    data[key_z_se] = z_se
+    data[key_r] = np.tanh(data[key_z])
+    data[key_r_se] = (1 - data[key_r]**2) * z_se
 
-    # Save summary effects in list
-    spec = []
-    for i, fit in enumerate(fits):
-        mod = dict(zip(fit.names, list(fit)))
-        b = mod["b"].item()
+    for e_ids in effect_sets:
         # === USER EDIT HERE ===
-        # === Edit this if-clause, depending on which models use a z effect size
-        # Transform z to r
-        if i <= 3:
-            spec.append(np.tanh(b))
-        else:
-            spec.append(b)
+        # === Get the desired effect sizes from the data
+        temp = data[data[key_e_id].isin(e_ids)]
+        z = temp[key_z]
+        z_se = temp[key_z_se]
+        r = temp[key_r]
+        r_se = temp[key_r_se]
 
-    return spec
+        # === USER EDIT HERE ===
+        # === Rewrite list of meta-analytic models to compute as desired
+        # Compute summary effects for each how-factor value combination
+        ctrl = ListVector(dict(stepadj=0.5, maxiter=2000))
+        w = 1/len(temp)
+        fits = [
+            metafor.rma(yi=z, sei=z_se, method="FE"),
+            metafor.rma(yi=z, sei=z_se, method="DL"),
+            metafor.rma(yi=z, sei=z_se, method="REML", control=ctrl),
+            metafor.rma(yi=z, sei=z_se, method="FE", weights=w),
+            metafor.rma(yi=r, sei=r_se, method="FE"),
+            metafor.rma(yi=r, sei=r_se, method="DL"),
+            metafor.rma(yi=r, sei=r_se, method="REML", control=ctrl),
+            metafor.rma(yi=r, sei=r_se, method="FE", weights=w)
+        ]
+
+        # Save summary effects in list
+        spec = []
+        for i, fit in enumerate(fits):
+            mod = dict(zip(fit.names, list(fit)))
+            b = mod["b"].item()
+            # === USER EDIT HERE ===
+            # === Edit this if-clause, depending on which models use a z effect size
+            # Transform z to r
+            if i <= 3:
+                spec.append(np.tanh(b))
+            else:
+                spec.append(b)
+
+        boot_effects.append(spec)
+
+    return boot_effects
 
 
 def fit_model_lvl_2(how_values, data, colmap):
@@ -114,6 +128,11 @@ def fit_model_lvl_2(how_values, data, colmap):
         key_z_se = colmap["key_z_se"]
         yi = data[key_z]
         sei = data[key_z_se]
+    elif effect == "d":
+        key_d = colmap["key_d"]
+        key_d_se = colmap["key_d_se"]
+        yi = data[key_d]
+        sei = data[key_d_se]
 
     # === USER EDIT HERE ===
     # === Rewrite this part according to your needs
@@ -147,7 +166,7 @@ def fit_model_lvl_2(how_values, data, colmap):
     return res
 
 
-def spec_list_lvl_3(e_ids, data, colmap):
+def spec_list_lvl_3(effect_sets, data, colmap):
     """Compute 3-level summary effects for each how-factor value combination.
 
     Arguments:
@@ -158,54 +177,68 @@ def spec_list_lvl_3(e_ids, data, colmap):
     Returns:
         List of computed summary effects.
     """
+    boot_effects = []
+    key_c_id = colmap["key_c_id"]
+    key_e_id = colmap["key_e_id"]
+
     # === USER EDIT HERE ===
-    # === Get the desired effect sizes from the data
-    # Get relevant keys from colmap
+    # === Get relevant keys from colmap
     key_z = colmap["key_z"]
     key_z_var = colmap["key_z_var"]
     key_r = colmap["key_r"]
     key_r_var = colmap["key_r_var"]
-    key_c_id = colmap["key_c_id"]
-    key_e_id = colmap["key_e_id"]
-
-    # Get data for included effects
-    temp = data[data[key_e_id].isin(e_ids)]
-    yi_z = temp[key_z]
-    V_z = temp[key_z_var]
-    yi_r = temp[key_r]
-    V_r = temp[key_r_var]
-
-    # Prepare 3-level dependency formula
-    formula_string = f"~ 1 | {key_c_id}/{key_e_id}"
-    formula = Formula(formula_string)
+    key_n = colmap["key_n"]
 
     # === USER EDIT HERE ===
-    # === Rewrite list of meta-analytic models to compute as desired
-    # Compute summary effects for each how-factor value combination
-    fits = [
-        metafor.rma(data=temp, yi=yi_z, sei=V_z,
-                    method="REML", test="t", random=formula),
-        metafor.rma(data=temp, yi=yi_z, sei=V_z,
-                    method="ML", test="t", random=formula),
-        metafor.rma(data=temp, yi=yi_z, sei=V_z,
-                    method="REML", test="z", random=formula),
-        metafor.rma(data=temp, yi=yi_z, sei=V_z,
-                    method="ML", test="z", random=formula)
-    ]
-    # Save summary effects in list
-    spec = []
-    for i, fit in enumerate(fits):
-        mod = dict(zip(fit.names, list(fit)))
-        b = mod["b"].item()
-        # === USER EDIT HERE ===
-        # === Edit this if-clause, depending on which models use a z effect size
-        # Transform z to r
-        if i <= 3:
-            spec.append(np.tanh(b))
-        else:
-            spec.append(b)
+    # === Draw randomly new effect size and compute variance
+    z_se = 1 / np.sqrt(data[key_n])
+    data[key_z] = np.random.normal(0, z_se, len(data))
+    data[key_z_var] = (z_se)**2
+    data[key_r] = np.tanh(data[key_z])
+    data[key_r_var] = ((1 - data[key_r]**2) * z_se)**2
 
-    return spec
+    for e_ids in effect_sets:
+        # === USER EDIT HERE ===
+        # === Get the desired effect sizes from the data
+        temp = data[data[key_e_id].isin(e_ids)]
+        yi_z = temp[key_z]
+        V_z = temp[key_z_var]
+        yi_r = temp[key_r]
+        V_r = temp[key_r_var]
+
+        # Prepare 3-level dependency formula
+        formula_string = f"~ 1 | {key_c_id}/{key_e_id}"
+        formula = Formula(formula_string)
+
+        # === USER EDIT HERE ===
+        # === Rewrite list of meta-analytic models to compute as desired
+        # Compute summary effects for each how-factor value combination
+        fits = [
+            metafor.rma(data=temp, yi=yi_z, sei=V_z,
+                        method="REML", test="t", random=formula),
+            metafor.rma(data=temp, yi=yi_z, sei=V_z,
+                        method="ML", test="t", random=formula),
+            metafor.rma(data=temp, yi=yi_z, sei=V_z,
+                        method="REML", test="z", random=formula),
+            metafor.rma(data=temp, yi=yi_z, sei=V_z,
+                        method="ML", test="z", random=formula)
+        ]
+        # Save summary effects in list
+        spec = []
+        for i, fit in enumerate(fits):
+            mod = dict(zip(fit.names, list(fit)))
+            b = mod["b"].item()
+            # === USER EDIT HERE ===
+            # === Edit this if-clause, depending on which models use a z effect size
+            # Transform z to r
+            if i <= 3:
+                spec.append(np.tanh(b))
+            else:
+                spec.append(b)
+
+        boot_effects.append(spec)
+
+    return boot_effects
 
 
 def fit_model_lvl_3(how_values, data, colmap):
@@ -238,6 +271,11 @@ def fit_model_lvl_3(how_values, data, colmap):
         key_z_var = colmap["key_z_var"]
         yi = data[key_z]
         V = data[key_z_var]
+    elif effect == "d":
+        key_d = colmap["key_d"]
+        key_d_var = colmap["key_d_var"]
+        yi = data[key_d]
+        V = data[key_d_var]
 
     # Prepare 3-level dependency formula
     key_c_id = colmap["key_c_id"]

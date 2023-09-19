@@ -27,7 +27,7 @@ source("user_data.R", local = knitr::knit_global())
 In this cell, set the **title**, the **working directory** and the **path to the dataset** for this analysis. The **config**, **preprocessed data**, **specs**, and **bootstrap data** paths depend on the working directory and the title. This naming convention can be changed, but the prefixes (i.e. `boot`, `config`, `data` and `specs`) are required for the **Dashboard** to work. The configuration file must exist, all other data can either be loaded or generated, using the boolean flags. The generated data will be stored at the specified paths, or loaded from that path.
 
 ```{r}
-TITLE <- "R2D4D_2"
+TITLE <- "R2D4D_3"
 DIR <- "../examples/R2D4D"
 DATA_PATH <- paste0(DIR, "/R2D4D.csv")
 
@@ -39,8 +39,8 @@ DATA_PATH <- paste0(DIR, "/R2D4D.csv")
 # DIR = "../examples/IandR"
 # DATA_PATH = paste0(DIR, "/iandr.sav")
 
-PREPROCESS_DATA <- T # Load (False) or preprocess data (True)
-GENERATE_SPECS <- T # Load (False) or generate specs (True)
+PREPROCESS_DATA <- F # Load (False) or preprocess data (True)
+GENERATE_SPECS <- F # Load (False) or generate specs (True)
 GENERATE_BOOTDATA <- T # Load (False) or generate boot data (True)
 
 CONFIG_PATH <- paste0(DIR, "/config_", TITLE, ".json")

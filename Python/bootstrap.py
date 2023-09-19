@@ -28,31 +28,14 @@ def generate_boot_data(specs, n_iter, data, colmap, level, save_path):
     n_specs = len(specs)
     res = np.zeros((n_specs, n_iter))
 
-    # Get relevant keys from colmap
-    key_z = colmap["key_z"]
-    key_z_se = colmap["key_z_se"]
-    key_r = colmap["key_r"]
-    key_r_se = colmap["key_r_se"]
-    key_n = colmap["key_n"]
-
     # Sample n_iter times under null hypothesis
     for col in tqdm(range(n_iter)):
-        # Draw randomly new effect size and compute standard error
-        z_se = 1 / np.sqrt(data[key_n])
-        data[key_z] = np.random.normal(0, z_se, len(data))
-        data[key_z_se] = z_se
-        data[key_r] = np.tanh(data[key_z])
-        data[key_r_se] = (1 - data[key_r]**2) * z_se
-
         # Compute summary effects for all effect ID sets according to how-factors
         # using bootstrapped data
-        boot_effects = []
         if level == 2:
-            for es in effect_sets:
-                boot_effects.append(spec_list_lvl_2(es, data, colmap))
+            boot_effects = spec_list_lvl_2(effect_sets, data, colmap)
         elif level == 3:
-            for es in effect_sets:
-                boot_effects.append(spec_list_lvl_3(es, data, colmap))
+            boot_effects = spec_list_lvl_3(effect_sets, data, colmap)
 
         # Store summary effects for each specification
         res[:, col] = sorted(np.array(boot_effects).flatten())
