@@ -158,7 +158,17 @@ In case of issues, feel free to contact [`dominik.vesely7@gmail.com`](mailto:dom
 
 ## License and Credit
 
-See the [LICENSE](LICENSE.md) file for license rights and limitations. If you use this code in your work, please cite it using GitHub's citation feature. Consider also citing [Voracek et al. (2019)](https://doi.org/10.1027/2151-2604/a000357) with the citation below.
+See the [LICENSE](LICENSE.md) file for license rights and limitations. If you use this code in your work, please cite it using GitHub's citation feature, or use the following BibTex citation.
+
+```
+@software{multiversetools,
+    author = {Veselý, Dominik},
+    license = {MIT},
+    title = {{Multiverse Tools}},
+    url = {https://github.com/d-vesely/multiverse-tools}
+}
+```
+Consider also citing [Voracek et al. (2019)](https://doi.org/10.1027/2151-2604/a000357) with the citation below.
 
 ```
 @article{voracek2019,
