@@ -126,3 +126,43 @@ readConfig <- function(path) {
   )
   return(config)
 }
+
+
+# Get configuration summary.
+#
+#  Arguments:
+#      config -- The processed config.
+#
+#  Returns:
+#      Configuration summary as a list of lines.
+#
+getConfigInfo <- function(config) {
+  c_info <- NULL
+  c_info <- c(c_info, paste(config$title, "- Level", config$level, "Meta-Analysis"))
+  c_info <- c(c_info, paste("  ", "Minimum Nr. of Samples to include Specification:", config$k_min))
+  c_info <- c(c_info, paste("  ", "Bootstrap Iterations:", config$n_boot_iter))
+  c_info <- c(c_info, paste("  ", config$n_which, "Which-Factors:"))
+  n_which_combos <- 1
+  for (which_f in names(config$which_lists)) {
+    values <- config$which_lists[[which_f]]
+    values_str <- paste(values, collapse = ", ")
+    n_which_combos <- n_which_combos * length(values)
+    c_info <- c(c_info, paste("    ", which_f, ":", values_str))
+  }
+  c_info <- c(c_info, paste("  (", n_which_combos, "Which-Factor Combinations )"))
+  c_info <- c(c_info, paste("  ", config$n_how, "How-Factors:"))
+  for (how_f in names(config$how_lists)) {
+    values <- config$how_lists[[how_f]]
+    values_str <- paste(values, collapse = ", ")
+    c_info <- c(c_info, paste("    ", how_f, ":", values_str))
+  }
+  c_info <- c(c_info, paste("  ", "Labels"))
+  for (label in config$labels) {
+    c_info <- c(c_info, paste("    ", label))
+  }
+  c_info <- c(c_info, paste("  ", "Column-Map"))
+  for (key in names(config$colmap)) {
+    c_info <- c(c_info, paste("    ", key, ":", config$colmap[[key]]))
+  }
+  return(c_info)
+}

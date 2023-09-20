@@ -120,3 +120,30 @@ def read_config(data=None, path=None):
         "n_boot_iter": json_data["n_boot_iter"]
     }
     return config
+
+
+def get_config_info(config):
+    """Get configuration summary.
+
+    Arguments:
+        config -- The processed config.
+
+    Returns:
+        Configuration summary as a list of lines.
+    """
+    c_info = [
+        f"{config['level']} - Level Meta-Analysis",
+        f"   Minimum Nr. of Samples to include Specification: {config['k_min']}",
+        f"   Bootstrap Iterations: {config['n_boot_iter']}",
+        f"   {config['n_which']} Which-Factors:",
+        *[f"     {k} : {(', ').join(v)}" for k,
+          v in config['which_lists'].items()],
+        f"   {config['n_how']} How-Factors:",
+        *[f"     {k} : {(', ').join(v)}" for k,
+          v in config['how_lists'].items()],
+        f"   Labels",
+        *[f"     {l}" for l in config['labels']],
+        f"   Column-Map",
+        *[f"     {k} : {v}" for k, v in config['colmap'].items()]
+    ]
+    return (c_info)

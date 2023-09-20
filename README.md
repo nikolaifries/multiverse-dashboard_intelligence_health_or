@@ -2,7 +2,7 @@
 
 This repository provides code to conduct specification curve and multiverse meta-analysis (see [Voracek et al. (2019)](https://doi.org/10.1027/2151-2604/a000357)) on a meta-analytic dataset. It is an adaptation of the existing code by [Voracek et al. (2019)](https://doi.org/10.1027/2151-2604/a000357), which was hard-coded towards a specific use-case/dataset. It could also handle only 2-level meta-analyses. In contrast, our code can be easily reused for other meta-analyses, requiring only minimal adaptations by the user.
 
-The code is available in both `Python` and `R`. The visualizations are coded in `Plotly` and `ggplot2` respectively. The computation of meta-analytic summary effects is done with the help of the R-package `metafor`, which is utilized in the `Python` code via the `Python`-`R` bridge `rpy2`.
+The code is available in both `Python` and `R`. The visualizations are coded in `Plotly` and `ggplot2` respectively. The computation of meta-analytic summary effects is done with the help of the `R`-package `metafor`, which is utilized in the `Python` code via the `Python`-`R` bridge [`rpy2`](https://rpy2.github.io/).
 
 In addition, the `Python` code offers an interactive Dashboard, created with `Plotly Dash`. It pertains only to the visualization part of the multiverse analysis process, meaning it has to fed with existing data (see Section [Dashboard](#dashboard)). This allows the user to the computational part of the analysis in `R` and the visualization part in `Python`, which is the approach we recommend. However, the individual steps of the analysis are interoperable, meaning it is up to the user, which code is used for which parts.
 
