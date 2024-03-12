@@ -2,6 +2,7 @@ import base64
 from dash import Dash, dcc, Output, Input, State, ALL
 import dash_bootstrap_components as dbc
 import io
+import os
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -101,25 +102,43 @@ def get_tab_content(memory):
     State("memory", "data"),
     State("inUpload", "filename"),
     Input("inUpload", "contents"),
-    prevent_initial_call=True
+    prevent_initial_call=False
 )
 def upload(memory, filenames, contents):
     uploads = []
+    if contents == None:
+        contents = []
+        filenames = [
+            "static_data/boot_HR.csv",
+            "static_data/config_HR.json",
+            "static_data/data_HR.csv",
+            "static_data/specs_HR.csv",
+        ]
+
+        for f in filenames:
+            file = open(f, "r", encoding="utf-8")
+            contents.append(file.read())
+            file.close()
+
     for f, c in sorted(zip(filenames, contents)):
         uploads.append(f)
-        c_type, c_string = c.split(",")
-        c_decoded = base64.b64decode(c_string)
-        c_decoded_str = io.StringIO(c_decoded.decode("ISO-8859-1"))
-        if f.startswith("boot"):
+        if c.startswith("data:application"):
+            c_type, c_string = c.split(",")
+            c_decoded = base64.b64decode(c_string)
+            c_decoded_str = io.StringIO(c_decoded.decode("ISO-8859-1"))
+        else:
+            c_decoded_str = io.StringIO(c)
+
+        if os.path.basename(f).startswith("boot"):
             boot_data = pd.read_csv(c_decoded_str)
 
-        if f.startswith("config"):
+        if os.path.basename(f).startswith("config"):
             config = read_config(data=c_decoded_str)
 
-        if f.startswith("data"):
+        if os.path.basename(f).startswith("data"):
             data = prepare_data(config["colmap"], raw=c_decoded_str)
 
-        if f.startswith("specs"):
+        if os.path.basename(f).startswith("specs"):
             specs = pd.read_csv(c_decoded_str)
 
     cluster_fill_data = get_cluster_fill_data(data, specs, config["colmap"])
@@ -377,7 +396,7 @@ def display_click_data(memory, clickData):
 
     spec_info = [
         f"{es:.4f}",
-        f"\[{lb:.4f}, {ub:.4f}\] (width: {ci:.4f})",
+        f"{lb:.4f}, {ub:.4f} (width: {ci:.4f})",
         f"{kc}",
         f"{k}",
         f"{p:.4f}",
