@@ -203,42 +203,6 @@ def upload(memory, filenames, contents):
 
 
 @app.callback(
-    Output("outDownloadMV", "data"),
-    State("multiverse", "figure"),
-    State("inImageWidthMV", "value"),
-    State("inImageHeightMV", "value"),
-    State("inImageFiletypeMV", "value"),
-    Input("inDownloadMV", "n_clicks"),
-    prevent_initial_call=True,
-)
-def download_multiverse(figure_dict, width, height, filetype, _):
-    fig = go.Figure(figure_dict)
-    if filetype == "html":
-        fig.write_html("multiverse.html")
-        return dcc.send_file("multiverse.html")
-    fig_bytes = fig.to_image(format=filetype, height=height, width=width)
-    return dcc.send_bytes(fig_bytes, f"multiverse.{filetype}")
-
-
-@app.callback(
-    Output("outDownloadTM", "data"),
-    State("treemap", "figure"),
-    State("inImageWidthTM", "value"),
-    State("inImageHeightTM", "value"),
-    State("inImageFiletypeTM", "value"),
-    Input("inDownloadTM", "n_clicks"),
-    prevent_initial_call=True,
-)
-def download_treemap(figure_dict, width, height, filetype, _):
-    fig = go.Figure(figure_dict)
-    if filetype == "html":
-        fig.write_html("treemap.html")
-        return dcc.send_file("treemap.html")
-    fig_bytes = fig.to_image(format=filetype, height=height, width=width)
-    return dcc.send_bytes(fig_bytes, f"treemap.{filetype}")
-
-
-@app.callback(
     Output("inRefresh", "n_clicks"),
     Output({"type": "inSelect", "index": ALL}, "value"),
     Output("inSpecNr", "value"),

@@ -9,18 +9,7 @@ def get_header():
         dbc.Col(dcc.Markdown(id="outHeaderTitle",
                 children="# Meta-Analysis"), width=4),
         dbc.Col(dcc.Markdown(id="outHeaderLevel", children=""),
-                width={"size": 2, "offset": 3}),
-        dbc.Col(dcc.Upload(
-            id="inUpload",
-            children=html.Div([
-                "Drag and Drop or ",
-                html.A("Select Files")
-            ]),
-            multiple=True,
-            className="upload"
-        ), width=2),
-        dbc.Col(
-            dcc.Markdown(id="outUpload", children=""), width=1),
+                width={"size": 2, "offset": 3})
     ], className="header")
 
 
@@ -32,8 +21,7 @@ def get_data_tab(config, data):
         dbc.Row([
             dbc.Col(html.H2("Dataset"), width=6),
             dbc.Col(dbc.Row([
-                dbc.Col(html.H2("Treemap"), width=6),
-                dbc.Col(get_download_card("TM"), width=6)
+                dbc.Col(html.H2("Treemap"), width=6)
             ], justify="between"), width=6),
         ]),
         dbc.Row([
@@ -50,7 +38,6 @@ def get_multiverse_tab(data, factor_lists, kc_range, k_range, n_total_specs, col
         dbc.Col([
             dbc.Row([
                 dbc.Col(html.H2("Multiverse Analysis"), width=4),
-                dbc.Col(get_download_card("MV"), width=4),
             ], justify="between"),
             dbc.Row([
                 dcc.Graph(figure={}, id="multiverse")
@@ -139,37 +126,6 @@ def _get_datatable_formatting(df):
             columns.append(item)
 
     return columns
-
-
-def get_download_card(id):
-    return dbc.Col([
-        dbc.Card(dbc.CardBody(), className="card-header thin"),
-        dbc.Card(dbc.CardBody(dbc.Row([
-            dbc.Col([
-                dbc.InputGroup([dbc.InputGroupText("Width"),
-                    dbc.Col(dbc.Input(id=f"inImageWidth{id}", type="number", min=1,
-                            max=5000, step=1, value=1500, placeholder="e.g. '1000'"))
-                ], style={"margin-top": 0, "margin-bottom": "5px"}),
-                dbc.InputGroup([dbc.InputGroupText("Height"),
-                                dbc.Col(dbc.Input(
-                                    id=f"inImageHeight{id}", type="number", min=1, max=5000, step=1, value=1000, placeholder="e.g. '1000'"))
-                                ], style={"margin-top": 0})
-            ], width=6),
-            dbc.Col(dbc.Select(
-                id=f"inImageFiletype{id}",
-                options=[
-                    {"label": "PDF", "value": "pdf"},
-                    {"label": "PNG", "value": "png"},
-                    {"label": "SVG", "value": "svg"},
-                    {"label": "HTML", "value": "html"},
-                ],
-                value="pdf",
-            ), width=3, style={"margin-block": "inherit"}),
-            dbc.Col(dbc.Button(id=f"inDownload{id}", children=html.I(
-                className="bi bi-download")), width=3, style={"text-align": "center"}),
-            dcc.Download(id=f"outDownload{id}")
-        ])), className="card-main")
-    ])
 
 
 def get_filter_info_card():
