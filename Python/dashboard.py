@@ -1,5 +1,6 @@
 import base64
 from dash import Dash, dcc, Output, Input, State, ALL
+import flask
 import dash_bootstrap_components as dbc
 import io
 import os
@@ -32,8 +33,11 @@ def _get_empty_figure():
 
 
 external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
+server = flask.Flask(__name__)
 app = Dash(__name__, external_stylesheets=external_stylesheets,
-           prevent_initial_callbacks="initial_duplicate", suppress_callback_exceptions=True)
+           prevent_initial_callbacks="initial_duplicate",
+           suppress_callback_exceptions=True,
+           server=server)
 
 app.layout = dbc.Container([
     dcc.Store(id="memory", storage_type="session"),
@@ -567,4 +571,4 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
 
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(host='0.0.0.0', port=8050)
