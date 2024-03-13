@@ -9,7 +9,18 @@ def get_header():
         dbc.Col(dcc.Markdown(id="outHeaderTitle",
                 children="# Meta-Analysis"), width=4),
         dbc.Col(dcc.Markdown(id="outHeaderLevel", children=""),
-                width={"size": 2, "offset": 3})
+                width={"size": 2, "offset": 3}),
+        dbc.Col(dcc.Upload(
+            id="inUpload",
+            children=html.Div([
+                "Drag and Drop or ",
+                html.A("Select Files")
+            ]),
+            multiple=True,
+            className="upload"
+        ), width=2),
+        dbc.Col(
+            dcc.Markdown(id="outUpload", children=""), width=1),
     ], className="header")
 
 
@@ -175,10 +186,10 @@ def get_filter_card(data, factor_lists, kc_range, k_range, n_total_specs, colmap
             dbc.Row([
                 dbc.Col(html.H4("Filters", className="card-title"), width=6),
                 dbc.Col(dbc.Row([
-                    dbc.Col(dbc.Button(id="inRefresh", children=html.I(
-                        className="bi bi-arrow-clockwise")), width=5, className="btn-col"),
-                    dbc.Col(dbc.Button(id="inReset", children=html.I(
-                        className="bi bi-trash")), width=5, className="btn-col"),
+                    dbc.Col(dbc.Button(id="inRefresh", children=html.I("Apply",
+                        className="bi")), width=5, className="btn-col"),
+                    dbc.Col(dbc.Button(id="inReset", children=html.I("Reset",
+                        className="bi")), width=5, className="btn-col"),
                 ], justify="start"), width=4)
             ], justify="between", className="filter-row")
         ), className="card-header"),
@@ -293,8 +304,8 @@ def get_filters(data, factor_lists, kc_range, k_range, n_total_specs, colmap):
         ], title="Factor Filters")], start_collapsed=True,),
         html.Hr(),
         dbc.Accordion([dbc.AccordionItem([
-            dbc.Button(children=html.I(
-                className="bi bi-check2-all"), id="inToggleAll"),
+            dbc.Button(children=html.I("Select all",
+                className="bi"), id="inToggleAll"),
             dbc.Checklist(
                 options=[{"label": c, "value": str(c_id)}
                          for c_id, c in [(c_id, data[data[key_c_id] == c_id][key_c].iloc[0]) for c_id in sorted(data[key_c_id].unique())]],
@@ -305,8 +316,8 @@ def get_filters(data, factor_lists, kc_range, k_range, n_total_specs, colmap):
         ], title="Study ID Filters")], start_collapsed=True,),
         html.Hr(),
         dbc.Accordion([dbc.AccordionItem([
-            dbc.Button(children=html.I(
-                className="bi bi-check2-all"), id="inToggleAllES"),
+            dbc.Button(children=html.I("Select all",
+                className="bi"), id="inToggleAllES"),
             dbc.Checklist(
                 options=[{"label": f"ES ID: {e_id}", "value": str(e_id)}
                          for e_id in sorted(data[key_e_id])],

@@ -32,7 +32,7 @@ def _get_empty_figure():
     return fig
 
 
-external_stylesheets = [dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
+external_stylesheets = []
 server = flask.Flask(__name__)
 app = Dash(__name__, external_stylesheets=external_stylesheets,
            prevent_initial_callbacks="initial_duplicate",
