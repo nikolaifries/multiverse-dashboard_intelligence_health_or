@@ -11,6 +11,7 @@ def get_header():
         dbc.Col(dcc.Markdown(id="outHeaderLevel", children=""),
                 width={"size": 2, "offset": 3}),
         dbc.Col(dcc.Upload(
+            disabled=True,
             id="inUpload",
             children=html.Div([
                 "Drag and Drop or ",
