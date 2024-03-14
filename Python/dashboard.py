@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
-from components import get_data_tab, get_multiverse_tab, get_other_tab, get_spec_infos, get_header
+from components import get_data_tab, get_multiverse_tab, get_other_tab, get_spec_infos, get_header, get_footer
 from config import read_config
 from data import prepare_data
 from plotting import get_spec_fill_data, get_cluster_fill_data, get_colors, plot_multiverse
@@ -39,6 +39,8 @@ app = Dash(__name__, external_stylesheets=external_stylesheets,
            suppress_callback_exceptions=True,
            server=server)
 
+app.title = "Multiverse dashboard"
+
 app.layout = dbc.Container([
     dcc.Store(id="memory", storage_type="session"),
     get_header(),
@@ -64,7 +66,8 @@ app.layout = dbc.Container([
                 tab_id="tab-op"
             )
         ], active_tab="tab-data")
-    ])
+    ]),
+    get_footer(),
 ], fluid=True)
 
 
