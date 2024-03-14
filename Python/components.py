@@ -12,6 +12,7 @@ def get_header():
                 width={"size": 2, "offset": 3}),
         dbc.Col(dcc.Upload(
             disabled=True,
+            max_size=1000000,
             id="inUpload",
             children=html.Div([
                 "Drag and Drop or ",
