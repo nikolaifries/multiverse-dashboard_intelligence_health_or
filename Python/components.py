@@ -7,9 +7,9 @@ from plotting import plot_treemap, plot_inferential, plot_p_hist
 def get_header():
     return dbc.Row([
         dbc.Col(dcc.Markdown(id="outHeaderTitle",
-                children="# Meta-Analysis"), width=4),
+                children="# Meta-Analysis"), width="auto"),
         dbc.Col(dcc.Markdown(id="outHeaderLevel", children=""),
-                width={"size": 2, "offset": 3}),
+                width="auto"),
         dbc.Col(dcc.Upload(
             disabled=True,
             max_size=1000000,
@@ -20,9 +20,9 @@ def get_header():
             ]),
             multiple=True,
             className="upload"
-        ), width=2),
+        ), width=0),
         dbc.Col(
-            dcc.Markdown(id="outUpload", children=""), width=1),
+            dcc.Markdown(id="outUpload", children=""), width=0),
     ], className="header")
 
 def get_footer():
