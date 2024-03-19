@@ -95,7 +95,8 @@ def get_tab_content(memory):
     other_tab_content = get_other_tab(
         pd.DataFrame(memory["boot_data"]),
         pd.DataFrame(memory["specs"]),
-        memory["config"]["title"],
+        #memory["config"]["title"],
+        "",
         memory["n_total_specs"]
     )
     return data_tab_content, multiverse_tab_content, other_tab_content
@@ -200,7 +201,7 @@ def upload(memory, filenames, contents):
         "factor_lists": factor_lists
     }
 
-    title = f"# Meta-Analysis: {config['title']}"
+    title = f"# {config['title']}"
     level_header = f"Level: {level}"
     return memory, title, level_header, ("  \n").join(uploads)
 
@@ -412,7 +413,8 @@ def update_multiverse(n_clicks, memory, spec_nr, ci_switch, ci_case, p_filter_sw
     n_total_specs = memory["n_total_specs"]
     level = memory["level"]
     labels = memory["config"]["labels"]
-    title = memory["config"]["title"]
+    # title = memory["config"]["title"]
+    title = ""
 
     y_l_limit = min(specs["lb"])
     y_u_limit = max(specs["ub"])
