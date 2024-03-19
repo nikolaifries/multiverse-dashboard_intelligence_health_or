@@ -15,11 +15,11 @@
 }
 
 h1 {
-    padding-left: 10px
+    font-size: 2em;
 }
 
 h2 {
-    padding-left: 20px
+    font-size: 1.5em;
 }
 
 .nav-tabs {
@@ -95,8 +95,7 @@ h2 {
 }
 
 .header {
-    padding: 15px;
-    height: 110px;
+
 }
 
 .footer {
