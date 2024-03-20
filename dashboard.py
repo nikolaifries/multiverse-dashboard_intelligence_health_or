@@ -32,6 +32,13 @@ def _get_empty_figure():
     return fig
 
 
+data_files = [
+    "static_data/boot_HR.csv",
+    "static_data/config_HR.json",
+    "static_data/data_HR.csv",
+    "static_data/specs_HR.csv",
+]
+
 external_stylesheets = []
 server = flask.Flask(__name__)
 app = Dash(__name__, external_stylesheets=external_stylesheets,
@@ -116,12 +123,7 @@ def upload(memory, filenames, contents):
     uploads = []
     if contents == None:
         contents = []
-        filenames = [
-            "static_data/boot_HR.csv",
-            "static_data/config_HR.json",
-            "static_data/data_HR.csv",
-            "static_data/specs_HR.csv",
-        ]
+        filenames = data_files
 
         for f in filenames:
             file = open(f, "r", encoding="utf-8")
