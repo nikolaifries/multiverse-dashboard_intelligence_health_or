@@ -63,7 +63,7 @@ def get_data_tab(config, data):
             dbc.Col(id="outDatatable", children=get_datatable(
                 data, key_c_id), width=6),
             dbc.Col(dcc.Graph(figure=plot_treemap(
-                data, title, colmap), id="treemap"), width=6)
+                data, "Multiverse", colmap), id="treemap"), width=6)
         ])
     ])
 
