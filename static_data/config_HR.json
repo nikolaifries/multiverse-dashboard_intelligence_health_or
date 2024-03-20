@@ -1,0 +1,45 @@
+{
+    "title": "Is lower intelligence a risk factor for physical and mental illness? A formal multilevel multiverse meta-analysis\n ## Multiverse Analysis of hazard ratios (HRs)",
+    "level": 3,
+    "k_min": 2,
+    "n_boot_iter": 100,
+    "colmap": {
+        "key_c": "Sample.name_summarized",
+        "key_c_id": "c_id",
+        "key_e_id": "e_id",
+        "key_logHR": "ES.ln",
+        "key_logHR_se": "ES.ln.SE",
+        "key_logHR_var": "ES.ln.S2",
+        "key_main_es": "ES.ln",
+        "key_main_es_se": "ES.ln.SE",
+        "key_n": "N.total"
+    },
+    "which": {
+        "n": 3,
+        "keys": ["Country.of.sample", "Health.outcome.source", "Adjustment.variables.apart.from.age.and.sex..birth.cohort..or.wave"],
+        "keys_labels": ["Country", "Health outcome source", "Adjustment"],
+        "add_all_values": [true, true, true],
+        "values": [
+            ["Denmark", "Finland", "Israel", "Norway", "Sweden", "UK"],
+            ["Physical or psychiatric examination", "Register data"],
+            ["None", "Adult SES", "Childhood SES", "Parental SES", "Education", "BMI", "CVD risk factors", "Smoking", "Alcohol consumption", "Multivariate"]
+        ],
+        "values_labels": [
+            ["Denmark", "Finland", "Israel", "Norway", "Sweden", "UK"],
+            ["Physical or psychiatric examination", "Register data"],
+            ["None", "Adult SES", "Childhood SES", "Parental SES", "Education", "BMI", "CVD risk factors", "Smoking", "Alcohol consumption", "Multivariate"]
+        ],
+        "all_label": "either"
+    },
+    "how": {
+        "n": 1,
+        "keys": ["ma_method"],
+        "keys_labels": ["model"],
+        "values": [
+            ["REML", "ML"]
+        ],
+        "values_labels": [
+            ["REML", "ML"]
+        ]
+    }
+}
