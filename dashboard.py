@@ -33,10 +33,10 @@ def _get_empty_figure():
 
 
 data_files = [
-    "static_data/boot_HR.csv",
-    "static_data/config_HR.json",
-    "static_data/data_HR.csv",
-    "static_data/specs_HR.csv",
+    "static_data/boot_OR.csv",
+    "static_data/config_OR.json",
+    "static_data/data_OR.csv",
+    "static_data/specs_OR.csv",
 ]
 
 external_stylesheets = []
