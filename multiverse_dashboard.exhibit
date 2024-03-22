@@ -1,10 +1,10 @@
 spec: v1
-name: multiverse-dashboard_intelligence_health_hr
-expose: multiverse-dashboard_intelligence_health_hr
+name: multiverse-dashboard_intelligence_health_or
+expose: multiverse-dashboard_intelligence_health_or
 lease: 1h
 objects:
-  - name: multiverse-dashboard_intelligence_health_hr
-    image: multiverse-dashboard_intelligence_health_hr
+  - name: multiverse-dashboard_intelligence_health_or
+    image: multiverse-dashboard_intelligence_health_or
     label: latest
     livecheck:
       type: http
