@@ -20,7 +20,7 @@ def prepare_data(colmap, raw=None, data=None):
     # Read raw input into pandas DataFrame, if data
     # is not provided as such
     if data is None:
-        data = pd.read_csv(raw, sep=",", header=0, escapechar='\\')
+        data = pd.read_csv(raw, sep=",", header=0, escapechar='\\', na_values=['NA'], keep_default_na=False)
 
     # Get relevant keys from colmap
     key_c = colmap["key_c"]

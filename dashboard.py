@@ -140,7 +140,7 @@ def upload(memory, filenames, contents):
             c_decoded_str = io.StringIO(c)
 
         if os.path.basename(f).startswith("boot"):
-            boot_data = pd.read_csv(c_decoded_str)
+            boot_data = pd.read_csv(c_decoded_str, na_values=['NA'], keep_default_na=False)
 
         if os.path.basename(f).startswith("config"):
             config = read_config(data=c_decoded_str)
@@ -149,7 +149,7 @@ def upload(memory, filenames, contents):
             data = prepare_data(config["colmap"], raw=c_decoded_str)
 
         if os.path.basename(f).startswith("specs"):
-            specs = pd.read_csv(c_decoded_str)
+            specs = pd.read_csv(c_decoded_str, na_values=['NA'], keep_default_na=False)
 
     cluster_fill_data = get_cluster_fill_data(data, specs, config["colmap"])
     spec_fill_data = get_spec_fill_data(
